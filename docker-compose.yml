@@ -1,31 +1,30 @@
-version: '5.0'
 services:
   database:
     image: mysql:latest
-    container_name: db_logs_stats #Valutare se rimuoverlo. 
+    container_name: worldfit_db #Valutare se rimuoverlo. 
                                   #Serve a dare un nome specifico al container, evitando che docker compose lo scali
     restart: unless-stopped #Necessario? Se si spegne docker proverà a far ripartire il container, 
                             #a meno che non sia stato stoppato dall'utente in precedenza 
                             #(Documentazione: https://docs.docker.com/reference/compose-file/services/#restart)
     networks:
-      workfit:
+      worldfit:
         ipv4_address: '172.25.0.2' 
     ports:
       - '3306:3306'
     environment:
       MYSQL_ROOT_PASSWORD_FILE: /run/secrets/mysql_root_password
-      MYSQL_DATABASE: accesslogs
-      MYSQL_PASSWORD_FILE: /run/secrets/mysql_api_password
+      MYSQL_DATABASE: WorldFitLogs
     volumes:
       - mysql_data:/var/lib/mysql #Volume contenente il DB. Valutare opzioni di backup.
-      - ./init:/docker-entrypoint-initdb.d #nella cartella init ci va il file .sql di inizializzazione del database
+      - ./init:/docker-entrypoint-initdb.d #Cartella contenente i file di inisializzazione del DB
     secrets:
       - mysql_root_password
+      - mysql_api_password
 
   #api:
     #build: ./api
     #networks:
-      #workfit:
+      #worldfit:
     #ports:
     #  - '80:80' #Esporre solo la 443 a progetto finito? Il client è un tornello specifico dopo tutto...
     #secrets:
@@ -34,15 +33,15 @@ services:
     #dallo script python che compone l'API
 
 networks:
-  workfit: 
+  worldfit: 
     driver: bridge #È corretto come driver di rete?
     ipam:
       config:
-        subnet: '172.25.0.0/24' #Rete troppo ampia?
+        - subnet: '172.25.0.0/24' #Rete troppo ampia?
 volumes:
   mysql_data: #Voglio che il mio db sia salvato in un volume gestito da docker? E per eventuali backup?
 secrets:
   mysql_root_password:
     file: ./secrets/mysql_root_password.txt
-  mysql_user_password:
+  mysql_api_password:
     file: ./secrets/mysql_api_password.txt
