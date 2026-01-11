@@ -1,7 +1,7 @@
 #!/bin/sh
 set -e
 
-LOG_API_PASSWORD=$(cat /run/secrets/mysql_api_password)
+LOG_API_PASSWORD=$(cat /run/secrets/db_ls_api_password)
 
 mysql -u root -p"$MYSQL_ROOT_PASSWORD" "$MYSQL_DATABASE" <<-EOSQL
 -- Creazione Utente API

@@ -1,34 +1,39 @@
 services:
-  database:
+  worldfit_db:
     image: mysql:latest
-    container_name: worldfit_db #Valutare se rimuoverlo. 
-                                  #Serve a dare un nome specifico al container, evitando che docker compose lo scali
     restart: unless-stopped #Necessario? Se si spegne docker proverà a far ripartire il container, 
                             #a meno che non sia stato stoppato dall'utente in precedenza 
                             #(Documentazione: https://docs.docker.com/reference/compose-file/services/#restart)
     networks:
       worldfit:
-        ipv4_address: '172.25.0.2' 
     ports:
-      - '3306:3306'
+      - '3306:3306' # Da rimuovere a testing finito
     environment:
-      MYSQL_ROOT_PASSWORD_FILE: /run/secrets/mysql_root_password
-      MYSQL_DATABASE: WorldFitLogs
+      MYSQL_ROOT_PASSWORD_FILE: /run/secrets/db_ls_root_password
+      MYSQL_DATABASE: WorldFitLS
     volumes:
       - mysql_data:/var/lib/mysql #Volume contenente il DB. Valutare opzioni di backup.
       - ./init:/docker-entrypoint-initdb.d #Cartella contenente i file di inisializzazione del DB
     secrets:
-      - mysql_root_password
-      - mysql_api_password
+      - db_ls_root_password
+      - db_ls_api_password
 
-  #api:
+  #worldfit_api:
     #build: ./api
+    #Passiamo il nome del servizio come variabile d'ambiente, così non c'è bisogno di assegnare indirizzi IP statici:
+    #Si occuperà Docker di comunicare l'indirizzo ip giusto all'API una volta che lo avrà creato.
+    #environment:
+    #  - DB_HOST=worldfit_db
+    #depends_on:
+    #  - worldfit_db
     #networks:
       #worldfit:
     #ports:
     #  - '80:80' #Esporre solo la 443 a progetto finito? Il client è un tornello specifico dopo tutto...
     #secrets:
-      #- mysql_user_password
+      #- db_ls_api_password
+      #- db_gs_api_user
+      #- db_gs_api_password
     #Da completare, impostare secrets per variabili d'ambiente di root password, API key, ID Palestra che verranno prese
     #dallo script python che compone l'API
 
@@ -41,7 +46,13 @@ networks:
 volumes:
   mysql_data: #Voglio che il mio db sia salvato in un volume gestito da docker? E per eventuali backup?
 secrets:
-  mysql_root_password:
-    file: ./secrets/mysql_root_password.txt
-  mysql_api_password:
-    file: ./secrets/mysql_api_password.txt
+  db_ls_root_password:
+    file: ./secrets/db_ls_root_password.txt
+  db_ls_api_password:
+    file: ./secrets/db_ls_api_password.txt
+  db_gs_ip:
+    file: ./secrets/db_gs_ip.txt
+  db_gs_api_user:
+    file: ./secrets/db_gs_api_user.txt
+  db_gs_api_password:
+    file: ./secrets/db_gs_api_password.txt
