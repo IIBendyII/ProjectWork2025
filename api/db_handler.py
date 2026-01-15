@@ -1,6 +1,6 @@
 '''Modulo Python contenente classi e metodi per l'interazione con il database gestionale ed il databse di logs e statistiche'''
 
-from sqlalchemy import create_engine, Integer, CHAR, String, Date, DateTime, ForeignKey
+from sqlalchemy import create_engine, Integer, CHAR, String, Date, DateTime, ForeignKey, select
 from sqlalchemy.orm import declarative_base, Session, Mapped, mapped_column
 from typing import Optional
 from datetime import date, datetime
@@ -8,8 +8,12 @@ from datetime import date, datetime
 class DB_handler:
     """Classe base per l'interazione con un database generico"""
     def __init__(self,database_uri):
-        self.engine = create_engine(database_uri, echo=False) # creazione dell'engine, la "Fabbrica" che crea le comunicazioni con il DB: https://docs.sqlalchemy.org/en/20/orm/quickstart.html#create-an-engine
-        self.base = declarative_base() # classe base per i template di tabelle: https://docs.sqlalchemy.org/en/20/tutorial/metadata.html
+        # creazione dell'engine, la "Fabbrica" che crea le comunicazioni con il DB
+        # https://docs.sqlalchemy.org/en/20/orm/quickstart.html#create-an-engine
+        self.engine = create_engine(database_uri, echo=False)
+        
+        # classe base per i template di tabelle: https://docs.sqlalchemy.org/en/20/tutorial/metadata.html
+        self.base = declarative_base()
 
 class LogsAndStats(DB_handler):
     '''Classe specifica per integargire con il DB Log e statistiche'''
@@ -54,15 +58,31 @@ class LogsAndStats(DB_handler):
 
                 session.add(nuovo_log)
                 session.commit()
-                print(f"+ Dato inserito con successo: {nuovo_log}") #da mettere in un log
+                print(f"+ Log inserito con successo: {nuovo_log}") #da mettere in un log
 
             except Exception as e:
                 session.rollback() # Annulla in caso di errore
-                print(f"- Errore durante l'inserimento: {e}") #da mettere in un log
+                print(f"- Errore durante l'inserimento Log: {e}") #da mettere in un log
     
     def insert_stats(self, sesso:str, fascia_eta:str, nome_palestra:str, data_ingresso:date, fascia_oraria:str):
         """Funzione per scrittura nella tabella 'Statistiche' del database"""
-        # TDB
+        with Session(self.engine) as session:
+            try:
+                nuovo_stat = self.Stat(
+                    sesso = sesso,
+                    fascia_eta = fascia_eta,
+                    nome_palestra = nome_palestra,
+                    data_ingresso = data_ingresso,
+                    fascia_oraria = fascia_oraria
+                )
+
+                session.add(nuovo_stat)
+                session.commit()
+                print(f"+ Stat inserito con successo: {nuovo_stat}") #da mettere in un log
+
+            except Exception as e:
+                session.rollback() # Annulla in caso di errore
+                print(f"- Errore durante l'inserimento Stat: {e}") #da mettere in un log
 
 class Gestionale(DB_handler):
     '''Classe specifica per interagire con il DB Gestionale'''
@@ -113,6 +133,20 @@ class Gestionale(DB_handler):
         def __repr__(self) -> str:
             return f"<Palestra(id={self.id}, nome='{self.nome}', indirizzo='{self.indirizzo}', luogo='{self.luogo}', stato='{self.stato}')>"
         
-    def select_client(self, smart_card_id:str):
-        '''Funzione'''
-        # TBD
+    def select_client(self, smart_card_id:str) -> Cliente:
+        '''Funzione che data una SmartCardID, restituisce il primo oggetto Cliente corrispondente'''
+        with Session(self.engine) as session:
+            stmt = select(self.Cliente).where(self.Cliente.smart_card_id) == smart_card_id
+            return session.scalar(stmt).first() #testa se scalar() è uguale a scalars().first()
+
+    def select_abbonamenti(self, id_cliente:str) -> list:
+        '''Funzione che dato un ID della tabella dei Clienti, recupera una lista di abbonamenti ad esso associati'''
+        with Session(self.engine) as session:
+            stmt = select(self.Abbonamento).where(self.Abbonamento.id_cliente) == id_cliente
+            return session.execute(stmt) #dovrebbe restituire una lista di oggetti Abbonamento corrispondenti
+
+    def select_palestra(self, palestra_id:str) -> Palestra:
+        '''Funzione che dato un ID di una palestra, restituisce il primo oggetto palestra corrispondente'''
+        with Session(self.engine) as session:
+            stmt = select(self.Palestra).where(self.Palestra.id) == palestra_id
+            return session.scalar(stmt).first() #testa se scalar() è uguale a scalars().first()
