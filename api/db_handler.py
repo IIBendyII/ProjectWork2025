@@ -1,24 +1,25 @@
 '''Modulo Python contenente classi e metodi per l'interazione con il database gestionale ed il databse di logs e statistiche'''
 
-from sqlalchemy import create_engine, Integer, CHAR, String, Date, DateTime, ForeignKey, select
-from sqlalchemy.orm import declarative_base, Session, Mapped, mapped_column
+from sqlalchemy import create_engine, Integer, CHAR, String, Date, DateTime, ForeignKey, select, insert
+from sqlalchemy.orm import DeclarativeBase, Session, Mapped, mapped_column
 from typing import Optional
 from datetime import date, datetime
 
 class DB_handler:
     """Classe base per l'interazione con un database generico"""
-    def __init__(self,database_uri):
+    def __init__(self,database_uri:str):
         # creazione dell'engine, la "Fabbrica" che crea le comunicazioni con il DB
         # https://docs.sqlalchemy.org/en/20/orm/quickstart.html#create-an-engine
-        self.engine = create_engine(database_uri, echo=False)
-        
-        # classe base per i template di tabelle: https://docs.sqlalchemy.org/en/20/tutorial/metadata.html
-        self.base = declarative_base()
+        self.engine = create_engine(database_uri, echo=False) #DA METTERE A FALSE A FINE TESTING. echo stampa su terminale tutte le operazioni sql
+
+class Base (DeclarativeBase):
+    '''classe base per i template di tabelle: https://docs.sqlalchemy.org/en/20/tutorial/metadata.html'''
+    pass
 
 class LogsAndStats(DB_handler):
     '''Classe specifica per integargire con il DB Log e statistiche'''
 
-    class Log(DB_handler.base):
+    class Log(Base):
         '''Mapped Class per interagire con la tabella dei logs'''
         __tablename__ = 'Logs'
 
@@ -30,17 +31,17 @@ class LogsAndStats(DB_handler):
         def __repr__(self) -> str:
             return f"<Log(id={self.id}, smart_card_id={self.smart_card_id}, palestra_id={self.palestra_id}, timestamp='{self.timestamp}')>"
     
-    class Stat(DB_handler.base):
+    class Stat(Base):
         '''Mapped Class per interagire con la tabella delle statistiche'''
         __tablename__ = 'Statistiche'
 
         # Optional[] indica che il campo può essere NULL nel database (DEFAULT NULL)
         id: Mapped[int] = mapped_column("Id", Integer, primary_key=True, autoincrement=True)
         sesso: Mapped[Optional[str]] = mapped_column("Sesso", CHAR(1))
-        fascia_eta = Mapped[Optional[str]] = mapped_column("FasciaEta", String(100))
-        nome_palestra = Mapped[Optional[str]] = mapped_column("NomePalestra", String(1000))
-        data_ingresso = Mapped[Optional[date]] = mapped_column("DataIngresso", Date)
-        fascia_oraria = Mapped[Optional[str]] = mapped_column("FasciaOraria", String(100))
+        fascia_eta: Mapped[Optional[str]] = mapped_column("FasciaEta", String(100))
+        nome_palestra: Mapped[Optional[str]] = mapped_column("NomePalestra", String(1000))
+        data_ingresso: Mapped[Optional[date]] = mapped_column("DataIngresso", Date)
+        fascia_oraria: Mapped[Optional[str]] = mapped_column("FasciaOraria", String(100))
 
         def __repr__(self) -> str:
             return f"<Stat(id={self.id}, sesso={self.sesso}, fascia_eta='{self.fascia_eta}', nome_palestra='{self.nome_palestra}'" \
@@ -48,46 +49,40 @@ class LogsAndStats(DB_handler):
     
     def insert_log(self, smart_card_id:str, palestra_id:int, timestamp:datetime):
         """Funzione per scrittura nella tabella 'Logs' del database"""
-        with Session(self.engine) as session:
+        with self.engine.connect() as connection:
             try:
-                nuovo_log = self.Log(
-                    smart_card_id=smart_card_id,
-                    palestra_id=palestra_id,
-                    timestamp=timestamp
-                )
-
-                session.add(nuovo_log)
-                session.commit()
-                print(f"+ Log inserito con successo: {nuovo_log}") #da mettere in un log
+                stmt = insert(self.Log).values(
+                    smart_card_id = smart_card_id,
+                    palestra_id = palestra_id,
+                    timestamp=timestamp)
+                connection.execute(stmt)
+                connection.commit()
+                print(f"+ Log inserito con successo: {stmt}") #da mettere in un log
 
             except Exception as e:
-                session.rollback() # Annulla in caso di errore
                 print(f"- Errore durante l'inserimento Log: {e}") #da mettere in un log
     
     def insert_stats(self, sesso:str, fascia_eta:str, nome_palestra:str, data_ingresso:date, fascia_oraria:str):
         """Funzione per scrittura nella tabella 'Statistiche' del database"""
-        with Session(self.engine) as session:
+        with self.engine.connect() as connection:
             try:
-                nuovo_stat = self.Stat(
+                stmt = insert(self.Stat).values(
                     sesso = sesso,
                     fascia_eta = fascia_eta,
                     nome_palestra = nome_palestra,
                     data_ingresso = data_ingresso,
-                    fascia_oraria = fascia_oraria
-                )
-
-                session.add(nuovo_stat)
-                session.commit()
-                print(f"+ Stat inserito con successo: {nuovo_stat}") #da mettere in un log
+                    fascia_oraria = fascia_oraria)
+                connection.execute(stmt)
+                connection.commit()
+                print(f"+ Stat inserito con successo: {stmt}") #da mettere in un log
 
             except Exception as e:
-                session.rollback() # Annulla in caso di errore
                 print(f"- Errore durante l'inserimento Stat: {e}") #da mettere in un log
 
 class Gestionale(DB_handler):
     '''Classe specifica per interagire con il DB Gestionale'''
 
-    class Cliente(DB_handler.base):
+    class Cliente(Base):
         '''Mapped Class per interagire con la tabella dei clienti'''
         __tablename__ = "Clienti"
         
@@ -108,7 +103,7 @@ class Gestionale(DB_handler):
                 f", luogo_nascita='{self.luogo_nascita}', stato_nascita='{self.stato_nascita}', indirizzo_residenza='{self.indirizzo_residenza}'" \
                 f", luogo_residenza='{self.luogo_residenza}', stato_residenza='{self.stato_residenza}', smart_card_id={self.smart_card_id})>"
     
-    class Abbonamento(DB_handler.base):
+    class Abbonamento(Base):
         '''Mapped Class per interagire con la tabella degli abbonamenti'''
         __tablename__ = "Abbonamenti"
 
@@ -120,7 +115,7 @@ class Gestionale(DB_handler):
         def __repr__(self) -> str:
             return f"<Abbonamento(id={self.id}, id_cliente={self.id_cliente}, valido_dal={self.valido_dal}, valido_al={self.valido_al})>"
 
-    class Palestra(DB_handler.base):
+    class Palestra(Base):
         '''Mapped Class per interagire con la tabella delle palestre'''
         __tablename__ = "Palestre"
 
