@@ -21,4 +21,4 @@ CREATE TABLE `Statistiche` (
 -- Evento di Cancellazione Dati Trimestrale
 CREATE EVENT `Pulizia`
 ON SCHEDULE EVERY 1 DAY 
-DO DELETE FROM `Log` WHERE `Timestamp` < DATE_SUB(NOW(), INTERVAL 3 MONTH);
+DO DELETE FROM `Logs` WHERE `Timestamp` < DATE_SUB(NOW(), INTERVAL 3 MONTH);
