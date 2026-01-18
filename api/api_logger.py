@@ -1,4 +1,5 @@
-'''Modulo python d'esempio per l'inserimento di dati nel database di Log e Statistiche ed il
+'''
+Modulo python d'esempio per l'inserimento di dati nel database di Log e Statistiche ed il
 controllo di dati nel database gestionale. Crea ciclicamente log fasulli e statistiche che
 vengono poi inserite nelle rispettive tabelle. Contiene:
     - funzioni per la gestione di segreti con docker
@@ -7,7 +8,7 @@ vengono poi inserite nelle rispettive tabelle. Contiene:
 '''
 
 from db_handler import Gestionale, LogsAndStats
-from datetime import datetime
+from datetime import datetime, date
 from time import sleep
 import sys, os, random  # random da rimuovere a fine testing
 
@@ -38,28 +39,56 @@ PSEUDOPAD = None #prendisegreto("pseudo_pad.txt")
 
 def pseudonimizzatore(smartID: str, pseudoKey: bytes) -> str:
     """Funzione"""
-    # da definire il metodo di pseudonimizzazione
+    # da definire il metodo di pseudonimizzazione (AES o RSA)
     # da implementare
     return smartID
 
 def anonimizzatore(dati: dict) -> dict:
-    """k-anonimity"""
-    FASCEETA = ['0-19','20-29','30-39','40-49','50-59','60-69','70-79','80-200']
-    FASCEORARIE = ['7-12','13-18','19-24','0-6']
-    #eta = # creo data del compleanno con giorno e mese di nascita ed anno di oggi
-    # poi controllo se oggi è >= di compleanno allora età = anno oggi - anno nascita
-    # altrimenti età = anno oggi - anno nascita - 1
+    """
+        Funzione di anonimizzazione della tabella Statistiche, basata su k-anonimity.
+        Data una riga da inserire nella tabella Statistiche, anonimizza le seguenti informazioni:
+        - Data di nascita -> fascia di età
+        - Timestamp di ingresso -> data e fascia oraria di ingresso
+    """
+    FASCEETA = [(0,19),(20,29),(30,39),(40,49),(50,59),(60,69),(70,79),(80,200)]
+    FASCEORARIE = [(7,12),(13,18),(19,24),(0,6)]
 
-    return {"sesso":dati["sesso"], "fascia_eta":fascia, "nome_palestra":dati["nome_palestra"], 
-            "data_ingresso":data, "fascia_oraria":ora}
+    # creo data del compleanno con giorno e mese di nascita ed anno di oggi poi controllo: 
+    # se (data_oggi >= data_compleanno) allora (età = anno oggi - anno nascita)
+    # altrimenti (età = anno oggi - anno nascita - 1)
+    oggi = date.today()
+    data_nascita = dati['data_nascita']
+    compleanno = date(
+        year=oggi.year,
+        month=data_nascita.month,
+        day=data_nascita.day
+        )
+    if oggi >= compleanno:
+        eta = oggi.year - data_nascita.year
+    else:
+        eta = oggi.year - data_nascita.year - 1
+    
+    # determino la fascia di età
+    for fascia in FASCEETA:
+        if eta in range(fascia[0],fascia[1]+1):
+            fascia_eta = f'{fascia[0]}-{fascia[1]}'
+            break
+    
+    data_ingresso = dati['timestamp'].date()
+    ora_ingresso = dati['timestamp'].time()
+
+    # determino la fascia oraria di ingresso
+    for fascia in FASCEORARIE:
+        if ora_ingresso.hour in range(fascia[0],fascia[1]+1):
+            fascia_oraria = f'{fascia[0]}-{fascia[1]}'
+            break
+
+    return {"sesso":dati["sesso"], "fascia_eta":fascia_eta, "nome_palestra":dati["nome_palestra"], 
+            "data_ingresso":data_ingresso, "fascia_oraria":fascia_oraria}
 
 if __name__ == "__main__":
-    valori = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ'
-    while True:
-        # Genero un log casuale
-        smartID = ''
-        while len(smartID)<6:
-            smartID += valori[random.randint(0,len(valori)-1)]
+    smartIDs = [] # non carico id su github, ve li inserite voi ;)
+    for smartID in smartIDs:
         pseudoSmartID = pseudonimizzatore(smartID, pseudoKey=PSEUDOKEY)
         palestraID = random.randint(1,50)
         timestamp = datetime.now()
@@ -70,20 +99,21 @@ if __name__ == "__main__":
         magazziniere = LogsAndStats(DATABASE_LS_URI)
         # inserisco un log all'interno della tabella logs
         magazziniere.insert_log(smart_card_id=pseudoSmartID,palestra_id=palestraID,timestamp=timestamp)
-        '''
         # creo un oggetto "gestore" per interagire con il DB Gestionale
         gestore = Gestionale(DATABASE_GS_URI)
         # prendo le informazioni del cliente partendo dalla sua SmartCard
         cliente = gestore.select_client(smartID)
-        
-        dati = anonimizzatore(dati= { # anonimizzo le seguenti informazioni
+
+        # anonimizzo le seguenti informazioni
+        dati = anonimizzatore({
             "sesso":cliente.sesso,
             "data_nascita":cliente.data_nascita,
             "nome_palestra":palestraID,
             "timestamp":timestamp
         })
+        
         # inserisco i dati anonimizzati nella tabella statistiche
         magazziniere.insert_stats(sesso=dati["sesso"], fascia_eta=dati["fascia_eta"], nome_palestra=dati["nome_palestra"],
-                                  data_ingresso=dati["data_ingresso"], fascia_oraria=dati["fascia_oraria"])'''
+                                  data_ingresso=dati["data_ingresso"], fascia_oraria=dati["fascia_oraria"])
         sleep(1)
         

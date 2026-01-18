@@ -131,17 +131,17 @@ class Gestionale(DB_handler):
     def select_client(self, smart_card_id:str) -> Cliente:
         '''Funzione che data una SmartCardID, restituisce il primo oggetto Cliente corrispondente'''
         with Session(self.engine) as session:
-            stmt = select(self.Cliente).where(self.Cliente.smart_card_id) == smart_card_id
-            return session.scalar(stmt).first() #testa se scalar() è uguale a scalars().first()
+            stmt = select(self.Cliente).where(self.Cliente.smart_card_id == smart_card_id)
+            return session.scalar(stmt)
 
     def select_abbonamenti(self, id_cliente:str) -> list:
         '''Funzione che dato un ID della tabella dei Clienti, recupera una lista di abbonamenti ad esso associati'''
         with Session(self.engine) as session:
-            stmt = select(self.Abbonamento).where(self.Abbonamento.id_cliente) == id_cliente
+            stmt = select(self.Abbonamento).where(self.Abbonamento.id_cliente == id_cliente)
             return session.execute(stmt) #dovrebbe restituire una lista di oggetti Abbonamento corrispondenti
 
     def select_palestra(self, palestra_id:str) -> Palestra:
         '''Funzione che dato un ID di una palestra, restituisce il primo oggetto palestra corrispondente'''
         with Session(self.engine) as session:
-            stmt = select(self.Palestra).where(self.Palestra.id) == palestra_id
-            return session.scalar(stmt).first() #testa se scalar() è uguale a scalars().first()
+            stmt = select(self.Palestra).where(self.Palestra.id == palestra_id)
+            return session.scalar(stmt)
