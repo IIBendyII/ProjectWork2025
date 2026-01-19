@@ -39,12 +39,12 @@ class LogsAndStats(DB_handler):
         id: Mapped[int] = mapped_column("Id", Integer, primary_key=True, autoincrement=True)
         sesso: Mapped[Optional[str]] = mapped_column("Sesso", CHAR(1))
         fascia_eta: Mapped[Optional[str]] = mapped_column("FasciaEta", String(100))
-        nome_palestra: Mapped[Optional[str]] = mapped_column("NomePalestra", String(1000))
+        palestra_id: Mapped[Optional[str]] = mapped_column("PalestraId", Integer)
         data_ingresso: Mapped[Optional[date]] = mapped_column("DataIngresso", Date)
         fascia_oraria: Mapped[Optional[str]] = mapped_column("FasciaOraria", String(100))
 
         def __repr__(self) -> str:
-            return f"<Stat(id={self.id}, sesso={self.sesso}, fascia_eta='{self.fascia_eta}', nome_palestra='{self.nome_palestra}'" \
+            return f"<Stat(id={self.id}, sesso={self.sesso}, fascia_eta='{self.fascia_eta}', palestra_id='{self.palestra_id}'" \
                 f", data_ingresso={self.data_ingresso}, fascia_oraria='{self.fascia_oraria}')>"
     
     def insert_log(self, smart_card_id:str, palestra_id:int, timestamp:datetime):
@@ -62,14 +62,14 @@ class LogsAndStats(DB_handler):
             except Exception as e:
                 print(f"- Errore durante l'inserimento Log: {e}") #da mettere in un log
     
-    def insert_stats(self, sesso:str, fascia_eta:str, nome_palestra:str, data_ingresso:date, fascia_oraria:str):
+    def insert_stats(self, sesso:str, fascia_eta:str, palestra_id:int, data_ingresso:date, fascia_oraria:str):
         """Funzione per scrittura nella tabella 'Statistiche' del database"""
         with self.engine.connect() as connection:
             try:
                 stmt = insert(self.Stat).values(
                     sesso = sesso,
                     fascia_eta = fascia_eta,
-                    nome_palestra = nome_palestra,
+                    palestra_id = palestra_id,
                     data_ingresso = data_ingresso,
                     fascia_oraria = fascia_oraria)
                 connection.execute(stmt)

@@ -37,10 +37,11 @@ DATABASE_GS_URI = f"mysql+pymysql://{DB_GS_USER}:{DB_GS_PASS}@{DB_GS_HOST}:{DB_G
 PSEUDOKEY = None #prendisegreto("pseudo_key.txt")
 PSEUDOPAD = None #prendisegreto("pseudo_pad.txt")
 
-def pseudonimizzatore(smartID: str, pseudoKey: bytes) -> str:
-    """Funzione"""
-    # da definire il metodo di pseudonimizzazione (AES o RSA)
-    # da implementare
+def pseudonimizzatore(smartID: str, pseudoKey:str, pseudoPad:str) -> str:
+    """Funzione che dato un ID, chiave e padding, pseudonimizza l'ID (Raw RSA)"""
+    #implementare RSA in modo che lo smartID da implementare sia, grazie ad un padding preimpostato,
+    # sempre di una dimensione specifica, in modo che l'algoritmo RSA non ne crei uno lui randomico
+    # rendendo l'implementazione deterministica
     return smartID
 
 def anonimizzatore(dati: dict) -> dict:
@@ -83,7 +84,7 @@ def anonimizzatore(dati: dict) -> dict:
             fascia_oraria = f'{fascia[0]}-{fascia[1]}'
             break
 
-    return {"sesso":dati["sesso"], "fascia_eta":fascia_eta, "nome_palestra":dati["nome_palestra"], 
+    return {"sesso":dati["sesso"], "fascia_eta":fascia_eta, "palestra_id":dati["palestra_id"], 
             "data_ingresso":data_ingresso, "fascia_oraria":fascia_oraria}
 
 if __name__ == "__main__":
@@ -108,12 +109,12 @@ if __name__ == "__main__":
         dati = anonimizzatore({
             "sesso":cliente.sesso,
             "data_nascita":cliente.data_nascita,
-            "nome_palestra":palestraID,
+            "palestra_id":palestraID,
             "timestamp":timestamp
         })
         
         # inserisco i dati anonimizzati nella tabella statistiche
-        magazziniere.insert_stats(sesso=dati["sesso"], fascia_eta=dati["fascia_eta"], nome_palestra=dati["nome_palestra"],
+        magazziniere.insert_stats(sesso=dati["sesso"], fascia_eta=dati["fascia_eta"], palestra_id=dati["palestra_id"],
                                   data_ingresso=dati["data_ingresso"], fascia_oraria=dati["fascia_oraria"])
         sleep(1)
         

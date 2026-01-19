@@ -1,6 +1,6 @@
 services:
   worldfit_db:
-    image: mysql:latest
+    image: mysql:latest # Meglio inserire una build precisa per evitare problemi?
     restart: unless-stopped #Necessario? Se si spegne docker proverà a far ripartire il container, 
                             #a meno che non sia stato stoppato dall'utente in precedenza 
                             #(Documentazione: https://docs.docker.com/reference/compose-file/services/#restart)

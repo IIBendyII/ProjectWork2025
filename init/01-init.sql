@@ -13,7 +13,7 @@ CREATE TABLE `Statistiche` (
     `Id` INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
     `Sesso` CHAR(1) DEFAULT NULL,
     `FasciaEta` VARCHAR(100) DEFAULT NULL,       -- "Fascia di età" (Es: 20-30)
-    `NomePalestra` VARCHAR(1000) DEFAULT NULL,
+    `PalestraId` INT DEFAULT NULL,
     `DataIngresso` DATE DEFAULT NULL,
     `FasciaOraria` VARCHAR(100) DEFAULT NULL    -- "Fascia Oraria di Accesso" (Es: 18:00-20:00)
 );
