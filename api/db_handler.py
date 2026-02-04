@@ -138,7 +138,7 @@ class Gestionale(DB_handler):
         '''Funzione che dato un ID della tabella dei Clienti, recupera una lista di abbonamenti ad esso associati'''
         with Session(self.engine) as session:
             stmt = select(self.Abbonamento).where(self.Abbonamento.id_cliente == id_cliente)
-            return session.execute(stmt) #dovrebbe restituire una lista di oggetti Abbonamento corrispondenti
+            return session.scalars(stmt).all()
 
     def select_palestra(self, palestra_id:str) -> Palestra:
         '''Funzione che dato un ID di una palestra, restituisce il primo oggetto palestra corrispondente'''
