@@ -1,50 +1,79 @@
 services:
   worldfit_db:
-    image: mysql:latest # Meglio inserire una build precisa per evitare problemi?
-    restart: unless-stopped #Necessario? Se si spegne docker proverà a far ripartire il container, 
-                            #a meno che non sia stato stoppato dall'utente in precedenza 
-                            #(Documentazione: https://docs.docker.com/reference/compose-file/services/#restart)
-    networks:
-      worldfit:
-    ports:
-      - '3306:3306' # Da rimuovere a testing finito
+    build: ./db
+    container_name: db_logs_stats
+    restart: unless-stopped
+    read_only: true #Rende il file system read-only: difesa da tempering esterno
+    tmpfs: #le seguenti cartelle utilizzate dal processo mysql ed il volume contenente il DB non saranno read-only
+    - /tmp
+    - /var/run/mysqld
+    cap_drop: #Rimuove i privilegi (capabilities) che docker assegna ai container di default
+      - ALL
+    security_opt: #Mitiga privilege escalation impedendo l'utilizzo di comandi come su o sudo
+      - no-new-privileges:true
     environment:
       MYSQL_ROOT_PASSWORD_FILE: /run/secrets/db_ls_root_password
       MYSQL_DATABASE: WorldFitLS
+      MYSQL_API_USER: api
     volumes:
       - mysql_data:/var/lib/mysql #Volume contenente il DB. Valutare opzioni di backup.
-      - ./init:/docker-entrypoint-initdb.d #Cartella contenente i file di inisializzazione del DB
+      - ./db/init:/docker-entrypoint-initdb.d #Cartella contenente i file di inizializzazione del DB
+      - ./db/config/worldfit_db.cnf:/etc/mysql/conf.d/worldfit_db.cnf
     secrets:
       - db_ls_root_password
       - db_ls_api_password
+    networks:
+      - worldfit_backend
+    healthcheck: #performa un test per determinare se il db è pronto
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
-  #worldfit_api:
-    #build: ./api
-    #Passiamo il nome del servizio come variabile d'ambiente, così non c'è bisogno di assegnare indirizzi IP statici:
-    #Si occuperà Docker di comunicare l'indirizzo ip giusto all'API una volta che lo avrà creato.
-    #environment:
-    #  - DB_HOST=worldfit_db
-    #depends_on:
-    #  - worldfit_db
-    #networks:
-      #worldfit:
-    #ports:
-    #  - '80:80' #Esporre solo la 443 a progetto finito? Il client è un tornello specifico dopo tutto...
-    #secrets:
-      #- db_ls_api_password
-      #- db_gs_api_user
-      #- db_gs_api_password
-    #Da completare, impostare secrets per variabili d'ambiente di root password, API key, ID Palestra che verranno prese
-    #dallo script python che compone l'API
+  worldfit_api:
+    build: ./api
+    container_name: worldfit_api
+    restart: unless-stopped
+    depends_on: #Attende che il container worldfit_db sia pronto (healthcheck andato a buon fine) prima di partire
+      worldfit_db:
+        condition: service_healthy
+    read_only: true
+    tmpfs:
+      - /tmp
+      - /__pycache__
+    cap_drop:
+      - ALL
+    security_opt:
+      - no-new-privileges:true
+    environment:
+      DB_LS_HOST: worldfit_db:3306 # Docker si occupa di comunicare l'indirizzo ip del DB all'API
+      DB_LS_USER: api
+      DB_LS_DATABASE: WorldFitLS
+      DB_GS_DATABASE: WorldFit
+    secrets:
+      - db_ls_api_password
+      - db_gs_ip
+      - db_gs_api_user
+      - db_gs_api_password
+      - encrypt_key
+      - pseudo_pad
+      - api_key
+    networks:
+      - worldfit_backend
+      - worldfit_frontend
+    ports:
+      - '8000:8000' #Esporre solo la 443 a progetto finito? Il client è un tornello specifico dopo tutto...
 
 networks:
-  worldfit: 
-    driver: bridge #È corretto come driver di rete?
-    ipam:
-      config:
-        - subnet: '172.25.0.0/24' #Rete troppo ampia?
+  worldfit_backend:
+    driver: bridge
+    internal: true  #Isolamento della rete API/DB dall'esterno
+  worldfit_frontend:
+    driver: bridge
+
 volumes:
-  mysql_data: #Voglio che il mio db sia salvato in un volume gestito da docker? E per eventuali backup?
+  mysql_data:
+
 secrets:
   db_ls_root_password:
     file: ./secrets/db_ls_root_password.txt
@@ -56,3 +85,9 @@ secrets:
     file: ./secrets/db_gs_api_user.txt
   db_gs_api_password:
     file: ./secrets/db_gs_api_password.txt
+  encrypt_key:
+    file: ./secrets/encrypt_key.txt
+  pseudo_pad:
+    file: ./secrets/pseudo_pad.txt
+  api_key:
+    file: ./secrets/api_key.txt
