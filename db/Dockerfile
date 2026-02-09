@@ -1,5 +1,4 @@
-#Meglio inserire una build precisa per evitare problemi?
-FROM mysql:latest
+FROM mysql:9.5.0
 # Creazione dell'utente per il Database
 RUN useradd -m -u 1001 ls_user
 # Cambio di ownership dei files utilizzati dal Database
