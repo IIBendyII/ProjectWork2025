@@ -40,5 +40,5 @@ if __name__ == "__main__":
         "Signature":signature
     }
 
-    response = requests.post(url=args.indirizzo, json=body)
+    response = requests.post(url=f"http://{args.indirizzo}", json=body)
     print(response.content)
