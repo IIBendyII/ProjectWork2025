@@ -18,14 +18,13 @@ services:
     volumes:
       - mysql_data:/var/lib/mysql #Volume contenente il DB. Valutare opzioni di backup.
       - ./db/init:/docker-entrypoint-initdb.d #Cartella contenente i file di inizializzazione del DB
-      - ./db/config/worldfit_db.cnf:/etc/mysql/conf.d/worldfit_db.cnf
     secrets:
       - db_ls_root_password
       - db_ls_api_password
     networks:
       - worldfit_backend
     healthcheck: #performa un test per determinare se il db è pronto
-      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      test: "mysql -u root --password=$(cat /run/secrets/db_ls_root_password) -e 'SELECT 1'"
       interval: 10s
       timeout: 5s
       retries: 5

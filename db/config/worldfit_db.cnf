@@ -1,8 +1,0 @@
-[client]
-default-auth = caching_sha2_password
-
-[mysql]
-default-auth = caching_sha2_password
-
-[mysqladmin]
-default-auth = caching_sha2_password
