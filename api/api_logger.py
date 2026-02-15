@@ -10,8 +10,7 @@ vengono poi inserite nelle rispettive tabelle. Contiene:
 from db_handler import Gestionale, LogsAndStats
 from privacy_modules import load_encrypt_key, pseudonimizzatore, anonimizzatore
 from datetime import datetime
-from time import sleep
-import sys, os, random  # random da rimuovere a fine testing
+import sys, os, random
 
 def prendisegreto(secretFile: str) -> str:
     """Funzione che prende un segreto dalla cartella dei docker secrets"""
@@ -27,7 +26,6 @@ DB_GS_USER = prendisegreto("db_gs_api_user")
 DB_LS_PASS = prendisegreto("db_ls_api_password")
 DB_GS_PASS = prendisegreto("db_gs_api_password")
 DB_LS_HOST = os.getenv("DB_LS_HOST")
-#DB_LS_HOST = "172.17.0.1:3306" # da toglire a fine testing
 DB_GS_HOST = prendisegreto("db_gs_ip")
 DB_LS_NAME = os.getenv("DB_LS_DATABASE")
 DB_GS_NAME = os.getenv("DB_GS_DATABASE")
@@ -54,15 +52,15 @@ if __name__ == "__main__":
         gestore = Gestionale(DATABASE_GS_URI)
         # prendo le informazioni del cliente partendo dalla sua SmartCard
         cliente = gestore.select_client(smartID)
-
-        # anonimizzo le seguenti informazioni
-        dati = anonimizzatore({
-            "sesso":cliente.sesso,
-            "data_nascita":cliente.data_nascita,
-            "palestra_id":palestraID,
-            "timestamp":timestamp
-        })
-        
-        # inserisco i dati anonimizzati nella tabella statistiche
-        magazziniere.insert_stats(sesso=dati["sesso"], fascia_eta=dati["fascia_eta"], palestra_id=dati["palestra_id"],
-                                  data_ingresso=dati["data_ingresso"], fascia_oraria=dati["fascia_oraria"])
+        if cliente != None:
+            # anonimizzo le seguenti informazioni
+            dati = anonimizzatore({
+                "sesso":cliente.sesso,
+                "data_nascita":cliente.data_nascita,
+                "palestra_id":palestraID,
+                "timestamp":timestamp
+            })
+            
+            # inserisco i dati anonimizzati nella tabella statistiche
+            magazziniere.insert_stats(sesso=dati["sesso"], fascia_eta=dati["fascia_eta"], palestra_id=dati["palestra_id"],
+                                    data_ingresso=dati["data_ingresso"], fascia_oraria=dati["fascia_oraria"])
