@@ -4,6 +4,16 @@ from sqlalchemy import create_engine, Integer, CHAR, String, Date, DateTime, For
 from sqlalchemy.orm import DeclarativeBase, Session, Mapped, mapped_column
 from typing import Optional
 from datetime import date, datetime
+import logging
+from sys import stdout
+
+# Impostazione di Logging per stampare eventuali eccezioni nei Docker Logs
+logger = logging.getLogger(__name__)
+handler = logging.StreamHandler(stdout)
+formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(message)s')
+handler.setFormatter(formatter)
+logger.addHandler(handler)
+logger.setLevel(logging.ERROR)
 
 class DB_handler:
     """Classe base per l'interazione con un database generico"""
@@ -57,10 +67,10 @@ class LogsAndStats(DB_handler):
                     timestamp=timestamp)
                 connection.execute(stmt)
                 connection.commit()
-                print(f"+ Log inserito con successo: {stmt}") #da mettere in un log
+                logger.debug("Scrittura Tabella Log avvenuta con successo")
 
             except Exception as e:
-                print(f"- Errore durante l'inserimento Log: {e}") #da mettere in un log
+                logger.error("Errore durante l'inserimento riga in tabella Log: %s", str(e))
     
     def insert_stats(self, sesso:str, fascia_eta:str, palestra_id:int, data_ingresso:date, fascia_oraria:str):
         """Funzione per scrittura nella tabella 'Statistiche' del database"""
@@ -74,10 +84,10 @@ class LogsAndStats(DB_handler):
                     fascia_oraria = fascia_oraria)
                 connection.execute(stmt)
                 connection.commit()
-                print(f"+ Stat inserito con successo: {stmt}") #da mettere in un log
+                logger.debug("Scrittura Tabella Statistiche avvenuta con successo")
 
             except Exception as e:
-                print(f"- Errore durante l'inserimento Stat: {e}") #da mettere in un log
+                logger.error("Errore durante l'inserimento riga in tabella Statistiche: %s", str(e))
 
 class Gestionale(DB_handler):
     '''Classe specifica per interagire con il DB Gestionale'''
@@ -130,18 +140,27 @@ class Gestionale(DB_handler):
         
     def select_client(self, smart_card_id:str) -> Cliente:
         '''Funzione che data una SmartCardID, restituisce il primo oggetto Cliente corrispondente'''
-        with Session(self.engine) as session:
-            stmt = select(self.Cliente).where(self.Cliente.smart_card_id == smart_card_id)
-            return session.scalar(stmt)
+        try:
+            with Session(self.engine) as session:
+                stmt = select(self.Cliente).where(self.Cliente.smart_card_id == smart_card_id)
+                return session.scalar(stmt)
+        except Exception as e:
+            logger.error("Errore nel recupero di un Cliente dal DB Gestionale: %s", str(e))
 
     def select_abbonamenti(self, id_cliente:str) -> list:
         '''Funzione che dato un ID della tabella dei Clienti, recupera una lista di abbonamenti ad esso associati'''
-        with Session(self.engine) as session:
-            stmt = select(self.Abbonamento).where(self.Abbonamento.id_cliente == id_cliente)
-            return session.scalars(stmt).all()
+        try:
+            with Session(self.engine) as session:
+                stmt = select(self.Abbonamento).where(self.Abbonamento.id_cliente == id_cliente)
+                return session.scalars(stmt).all()
+        except Exception as e:
+            logger.error("Errore nel recupero degli abbonamenti dal DB Gestionale: %s", str(e))
 
     def select_palestra(self, palestra_id:str) -> Palestra:
         '''Funzione che dato un ID di una palestra, restituisce il primo oggetto palestra corrispondente'''
-        with Session(self.engine) as session:
-            stmt = select(self.Palestra).where(self.Palestra.id == palestra_id)
-            return session.scalar(stmt)
+        try:
+            with Session(self.engine) as session:
+                stmt = select(self.Palestra).where(self.Palestra.id == palestra_id)
+                return session.scalar(stmt)
+        except Exception as e:
+            logger.error("Errore nel recupero di una Palestra dal DB Gestionale: %s", str(e))
