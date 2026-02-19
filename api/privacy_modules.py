@@ -92,7 +92,7 @@ def anonimizzatore(dati: dict) -> dict:
             "data_ingresso":data_ingresso, "fascia_oraria":fascia_oraria}
 
 if __name__ == "__main__":
-    from api_logger import prendisegreto
+    from api_server import prendisegreto
     smartID = input("Inserisci uno Smart Card ID da pseudonimizzare: ")
     if len(smartID) == 6:
         valori = '0123456789ABCDEF'

@@ -13,7 +13,7 @@ handler = logging.StreamHandler(stdout)
 formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(message)s')
 handler.setFormatter(formatter)
 logger.addHandler(handler)
-logger.setLevel(logging.ERROR)
+logger.setLevel(logging.DEBUG)
 
 class DB_handler:
     """Classe base per l'interazione con un database generico"""
