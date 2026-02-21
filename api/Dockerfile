@@ -11,5 +11,5 @@ COPY ./*.py /api
 RUN chown -R api_user:api_user /api
 # Escalation ad utente dell'api ed esecuzione del programma
 USER api_user
-CMD ["python3", "api_server.py"]
-#CMD ["gunicorn", "--bind", "0.0.0.0:8000", "--workers", "5", "--threads", "2", "app:api_server.py"]
+# Da cambiare con la porta 443 a progetto finito
+CMD ["gunicorn", "--bind", "0.0.0.0:8000", "--workers", "5", "--threads", "2", "api_server:app"]
