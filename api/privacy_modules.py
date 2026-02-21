@@ -9,8 +9,8 @@ import base64
 
 def load_encrypt_key(key:str) -> RSA.RsaKey:
     """
-    Funzione che data una chiave testuale per la cifratura RSA (chiave pubblica) restituisce un
-    oggetto RsaKey
+        Funzione che data una chiave testuale per la cifratura RSA (chiave pubblica) restituisce un
+        oggetto RsaKey
     """
     encrypt_key = RSA.import_key(
         extern_key=key
@@ -19,14 +19,14 @@ def load_encrypt_key(key:str) -> RSA.RsaKey:
 
 def pseudonimizzatore(smart_card_id: str, encrypt_key:RSA.RsaKey, pseudo_pad:str) -> str:
     """
-    Funzione che dato un ID, chiave e padding, pseudonimizza l'ID con cifratura asimmetrica RSA.
-    La tipologia di RSA utilizzata è di tipo Raw RSA con padding preimpostato, per rendere gli
-    presudonimi generati deterministici in modo da garantire controlli anti-frode senza impegare
-    chiavi di decifratura o tabelle di corrispondenza on-line.
-    
-    Questo tipo di implementazione si è rivelato necessario in quanto per motivi di sicurezza,
-    le librerie per la cifratura RSA come cryptography inseriscono sempre e comunque
-    un padding causale, di fatto rendendo l'implementazione non deterministica.
+        Funzione che dato un ID, chiave e padding, pseudonimizza l'ID con cifratura asimmetrica RSA.
+        La tipologia di RSA utilizzata è di tipo Raw RSA con padding preimpostato, per rendere gli
+        presudonimi generati deterministici in modo da garantire controlli anti-frode senza impegare
+        chiavi di decifratura o tabelle di corrispondenza on-line.
+        
+        Questo tipo di implementazione si è rivelato necessario in quanto per motivi di sicurezza,
+        le librerie per la cifratura RSA come cryptography inseriscono sempre e comunque
+        un padding causale, di fatto rendendo l'implementazione non deterministica.
     """
     try:
         plaintext = (smart_card_id + pseudo_pad).encode('utf-8')
