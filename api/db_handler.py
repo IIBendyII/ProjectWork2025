@@ -13,14 +13,14 @@ handler = logging.StreamHandler(stdout)
 formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(message)s')
 handler.setFormatter(formatter)
 logger.addHandler(handler)
-logger.setLevel(logging.DEBUG)
+logger.setLevel(logging.ERROR)
 
 class DB_handler:
     """Classe base per l'interazione con un database generico"""
     def __init__(self,database_uri:str):
         # creazione dell'engine, la "Fabbrica" che crea le comunicazioni con il DB
         # https://docs.sqlalchemy.org/en/20/orm/quickstart.html#create-an-engine
-        self.engine = create_engine(database_uri, echo=False) #DA METTERE A FALSE A FINE TESTING. echo stampa su terminale tutte le operazioni sql
+        self.engine = create_engine(database_uri, echo=False)
 
 class Base (DeclarativeBase):
     '''classe base per i template di tabelle: https://docs.sqlalchemy.org/en/20/tutorial/metadata.html'''
