@@ -16,8 +16,13 @@ Se l'abbonamento è valido e la signature corrisponde, il tornello garantisce l'
 
 ### API
 Servizio di backend composto da due microservizi: 
-- un'API che risponde alle richieste dei tornelli, interrogando il Database Gestionale rigurado la validità degli abbonamenti associati alle SmartCard inserite nel tornello.
-- un Database MySQL contenente i log di accesso alla palestra e le statistiche utili all'azienda per rilevare le preferenze dei clienti ed effettuare controlli anti-frode.
+- un'API che risponde alle richieste dei tornelli.
+- un Database MySQL contenente i log di accesso alla palestra e le statistiche utili all'azienda per rilevare le preferenze dei clienti ed effettuare eventuali controlli anti-frode.
+
+Quando l'API riceve una richiesta per prima cosa ne verifica la leggitimità, controllando che il timestamp non sia troppo vecchio e cercando di ricreare la signature. Se la richiesta è legittima, interroga il Database Gestionale per verificare se l'abbonamento associato alla SmartCard risulta valido, comunicando il risultato al Client.
+
+Se l'abbonamento è risultato valido, registra inoltre l'accesso effettuando una query SQL tramite librerie ORM al Database di Log e Statistiche.
+
 ### Reti
 Mentre tornello, API e Database Gestionale comunicano via internet, il Database di Log e Statistiche rimane isolato in una rete interna, accessibile solamente dall'API.
 
