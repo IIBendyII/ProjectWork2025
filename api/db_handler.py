@@ -2,8 +2,11 @@
 
 from sqlalchemy import create_engine, Integer, CHAR, String, Date, DateTime, ForeignKey, select, insert
 from sqlalchemy.orm import DeclarativeBase, Session, Mapped, mapped_column
+from sqlalchemy.types import TypeDecorator
+from sqlalchemy.dialects.mysql import BINARY
 from typing import Optional
 from datetime import date, datetime
+import uuid
 import logging
 from sys import stdout
 
@@ -23,8 +26,23 @@ class DB_handler:
         self.engine = create_engine(database_uri, echo=False)
 
 class Base (DeclarativeBase):
-    '''classe base per i template di tabelle: https://docs.sqlalchemy.org/en/20/tutorial/metadata.html'''
+    '''Classe base per i template di tabelle: https://docs.sqlalchemy.org/en/20/tutorial/metadata.html'''
     pass
+
+class BinaryUUID(TypeDecorator):
+    '''
+    Classe "TypeDecorator" (https://docs.sqlalchemy.org/en/20/core/custom_types.html#augmenting-existing-types)
+    che definisce un tipo di dato "custom" per l'inserimento nel DB. Questa classe converte in automatico 
+    gli oggetti UUID di Python in BINARY(16) per MySQL durante le operazioni di INSERT
+    '''
+    impl = BINARY(16)
+    cache_ok = False # Facciamo solo insert, non ha senso conservare cache
+
+    # Funzione che SQLAlchemy usa prima dell'INSERT nel database. 
+    # Qui trasformiamo l'UUID che viene passato come valore di default 
+    # nella mapped class della tabella statistiche in bytes
+    def process_bind_param(self, value, dialect):
+        return value.bytes
 
 class LogsAndStats(DB_handler):
     '''Classe specifica per integargire con il DB Log e statistiche'''
@@ -46,7 +64,7 @@ class LogsAndStats(DB_handler):
         __tablename__ = 'Statistiche'
 
         # Optional[] indica che il campo può essere NULL nel database (DEFAULT NULL)
-        id: Mapped[int] = mapped_column("Id", Integer, primary_key=True, autoincrement=True)
+        id: Mapped[uuid.UUID] = mapped_column("Id", BinaryUUID, primary_key=True, default=uuid.uuid4)
         sesso: Mapped[Optional[str]] = mapped_column("Sesso", CHAR(1))
         fascia_eta: Mapped[Optional[str]] = mapped_column("FasciaEta", String(100))
         palestra_id: Mapped[Optional[str]] = mapped_column("PalestraId", Integer)

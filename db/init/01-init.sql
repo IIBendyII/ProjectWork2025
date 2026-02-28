@@ -3,23 +3,24 @@ USE WorldFitLS;
 -- Tabella Log
 CREATE TABLE `Logs` (
     `Id` INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
-    `SmartCardId` VARCHAR(1000) NOT NULL, -- Pseudonimizzato
+    `SmartCardId` VARCHAR(1000) NOT NULL,
     `PalestraId` INT NOT NULL,
-    `Timestamp` DATETIME NOT NULL -- Proveniente dal Client
+    `Timestamp` DATETIME NOT NULL
 );
 
 -- Tabella Statistiche
 CREATE TABLE `Statistiche` (
-    `Id` INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    `Id` BINARY(16) NOT NULL PRIMARY KEY,       -- Chiave Primaria in UUIDv4 binario
     `Sesso` CHAR(1) DEFAULT NULL,
-    `FasciaEta` VARCHAR(100) DEFAULT NULL,       -- "Fascia di età" (Es: 20-30)
+    `FasciaEta` VARCHAR(100) DEFAULT NULL,
     `PalestraId` INT DEFAULT NULL,
     `DataIngresso` DATE DEFAULT NULL,
-    `FasciaOraria` VARCHAR(100) DEFAULT NULL    -- "Fascia Oraria di Accesso" (Es: 18:00-20:00)
+    `FasciaOraria` VARCHAR(100) DEFAULT NULL
 );
 
 -- Evento di Cancellazione Dati Trimestrale
-CREATE EVENT `Pulizia`
+SET GLOBAL event_scheduler = ON;
+CREATE EVENT IF NOT EXISTS `Pulizia`
 ON SCHEDULE EVERY 1 DAY
 STARTS CURRENT_TIMESTAMP
 ON COMPLETION PRESERVE
