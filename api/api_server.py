@@ -1,7 +1,8 @@
 from flask import Flask, request, jsonify
 from db_handler import Gestionale, LogsAndStats
 from privacy_modules import anonimizzatore, pseudonimizzatore, load_encrypt_key
-from datetime import datetime, date
+from datetime import datetime, date, timezone
+import hmac
 from hashlib import sha256
 from sys import stdout
 import os, logging
@@ -36,26 +37,25 @@ ENCRYPTKEY = load_encrypt_key(prendisegreto("encrypt_key"))
 ENCRYPTPAD = prendisegreto("pseudo_pad")
 API_KEY = prendisegreto("api_key")
 
-DATETIME_FORMAT = r"%Y-%m-%d %H:%M:%S"
 HEXDIGITS = '0123456789ABCDEF'
-SECONDI_ACCETTABILI = 10
+SECONDI_ACCETTABILI = 20
 
-def timestampCheck(ricezione: datetime, timestamp: datetime) -> bool:
+def timestampCheck(ricezione: float, timestamp: int) -> bool:
     '''
         Funzione che controlla il timestamp della richiesta ricevuta.
         Se la ricezione è avvenuta entro un delta di secondi accettabile restituisce vero,
         altrimenti falso.
     '''
-    if int((ricezione - timestamp).total_seconds()) <= SECONDI_ACCETTABILI:
+    if ricezione - (timestamp/1000) <= SECONDI_ACCETTABILI:
         return True
     else:
         return False
 
-def signatureCheck(idSmartCard:str, idPalestra:int, timestamp:datetime, signature:str) -> bool:
+def signatureCheck(idSmartCard:str, idPalestra:int, timestamp:int, signature:str) -> bool:
     '''Funzione che controlla la validità della firma ricevuta nella richiesta'''
-    string = idSmartCard + str(idPalestra) + timestamp.strftime(DATETIME_FORMAT) + API_KEY
-    hash = sha256(string.encode('utf-8')).hexdigest()
-    if hash == signature:
+    string = idSmartCard + str(idPalestra) + str(timestamp)
+    check = hmac.new(key=API_KEY.encode('utf-8'),msg=string.encode('utf-8'),digestmod=sha256).hexdigest()
+    if check == signature:
         return True
     else:
         return False
@@ -82,8 +82,8 @@ def cardIdCheck(gestore:Gestionale, idSmartCard:str) -> bool:
     else:
         return False
 
-def check(gestore: Gestionale, ricezione:datetime,
-          idSmartCard:str, idPalestra:int, timestamp:datetime, signature:str) -> bool:
+def check(gestore: Gestionale, ricezione:float,
+          idSmartCard:str, idPalestra:int, timestamp:int, signature:str) -> bool:
     '''
         Funzione che effettua in cascata tutti i controlli necessari 
         a verificare la validità della richiesta ricevuta
@@ -105,10 +105,10 @@ def smartcardCorretto(idSmartCard:str) -> bool:
     else:
         return False
     
-def finalHash(idSmartCard:str, timestamp:str):
+def finalHmac(idSmartCard:str, timestamp:int):
     '''Funzione che calcola la signature finale con cui rispondere al client'''
-    string = idSmartCard + timestamp + API_KEY
-    return sha256(string.encode('utf-8')).hexdigest()
+    string = idSmartCard + str(timestamp)
+    return hmac.new(key=API_KEY.encode('utf-8'),msg=string.encode('utf-8'),digestmod=sha256).hexdigest()
 
 
 app = Flask(__name__)
@@ -118,7 +118,8 @@ def home():
     logger.debug("Connessione stabilita")
     data = request.json
 
-    ricezione = datetime.now()
+    # I timestamp vengono trattati tutti in timezone UTC
+    ricezione = datetime.now(tz=timezone.utc).timestamp()
     gestore = Gestionale(DATABASE_GS_URI)
 
     #controlla che i dati siano nel formato richiesto
@@ -127,12 +128,12 @@ def home():
         if not smartcardCorretto(idSmartCard):
             raise ValueError("SmartCard ID non ha un formato accettabile")
         idPalestra = int(data["IDPalestra"])
-        timestamp = datetime.strptime(data["Timestamp"], r"%Y-%m-%d %H:%M:%S")
+        timestamp = int(data["Timestamp"])
         signature = data["Signature"]
     except ValueError as e:
         logger.error("Dati ricevuti incorretti: %s", str(e))
         return jsonify({"valido": False,
-                        "signature": finalHash(data["IDSmartCard"], data["Timestamp"])})
+                        "signature": finalHmac(data["IDSmartCard"], data["Timestamp"])})
     
     abbonamentoValido = False
     if check(gestore, ricezione, idSmartCard, idPalestra, timestamp, signature):
@@ -148,6 +149,9 @@ def home():
         
         if abbonamentoValido:
             cliente = gestore.select_client(idSmartCard)
+            
+            #conversione timestamp in datetime per il Database Logs e Statistiche
+            timestamp = datetime.fromtimestamp(timestamp=timestamp/1000,tz=timezone.utc)
 
             #pseudonimizzazione id
             pseudoSmartID = pseudonimizzatore(idSmartCard,
@@ -174,7 +178,7 @@ def home():
     
     logger.debug("Abbonamento Valido: %s", abbonamentoValido)
     return jsonify({"valido": abbonamentoValido,
-                    "signature": finalHash(idSmartCard, timestamp.strftime(DATETIME_FORMAT))})
+                    "signature": finalHmac(idSmartCard, timestamp)})
 
 if __name__ == "__main__":
     app.run()

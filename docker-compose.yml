@@ -15,8 +15,8 @@ services:
       MYSQL_ROOT_PASSWORD_FILE: /run/secrets/db_ls_root_password
       MYSQL_DATABASE: WorldFitLS
       MYSQL_API_USER: api
-      TZ: Europe/Rome  # Se la timezone non è corretta l'evento di cancellazione log parte in ritardo
-    command: --default-time-zone=+01:00
+      TZ: UTC  # Tutti i timestamp sono gestiti come UTC sia client che backend
+    command: --default-time-zone=UTC
     volumes:
       - mysql_data:/var/lib/mysql #Volume contenente il DB. Valutare opzioni di backup.
       - ./db/init:/docker-entrypoint-initdb.d #Cartella contenente i file di inizializzazione del DB

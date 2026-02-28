@@ -9,6 +9,7 @@ Per il momento installatevela voi a mano se dovete fare del testing.
 import sys, argparse
 from datetime import datetime
 from hashlib import sha256
+import hmac
 import requests
 
 def prendisegreto(secretFile: str) -> str:
@@ -29,10 +30,10 @@ if __name__ == "__main__":
                         help='Smard Card ID')
     args = parser.parse_args()
 
-    timestamp = datetime.now().strftime(r"%Y-%m-%d %H:%M:%S")
+    timestamp = int(datetime.now().timestamp() * 1000)
     api_key = prendisegreto("api_key.txt")
-    dati = args.smartcardId + args.palestraId + timestamp + api_key
-    signature = sha256(dati.encode('utf-8')).hexdigest()
+    dati = args.smartcardId + args.palestraId + str(timestamp)
+    signature = hmac.new(key=api_key.encode('utf-8'), msg=dati.encode('utf-8'), digestmod=sha256).hexdigest()
     body = {
         "IDSmartCard":args.smartcardId,
         "IDPalestra":args.palestraId,
@@ -42,3 +43,4 @@ if __name__ == "__main__":
 
     response = requests.post(url=f"{args.indirizzo}", json=body)
     print(response.content)
+    
