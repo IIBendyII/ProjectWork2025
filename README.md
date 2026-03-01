@@ -26,14 +26,14 @@ Il tornello effettua una richiesta `POST` all'API inviando:
 - L'**ID della SmartCard**.
 - L'**ID della palestra** in cui è installato.
 - Un **timestamp** della richiesta per prevenire attacchi di tipo *replay*.
-- Una **signature** di sicurezza (hash SHA-256 generato dalla concatenazione dei parametri precedenti insieme a un *secret* condiviso).
+- Una **signature** di sicurezza (Firma HAMC usando hash SHA-256 generata dalla concatenazione dei parametri precedenti ed un *secret* condiviso).
 
 Alla ricezione della risposta, il tornello verifica la validità dell'abbonamento e una firma di ritorno prima di sbloccare l'accesso.
 
 ### API (Backend)
 Servizio backend ospitato in cloud che funge da intermediario tra i tornelli e i database. Si compone di:
 1. **API Gateway/Service**: Riceve le richieste dai tornelli, valida le firme crittografiche (signature e timestamp) e interroga il Database Gestionale per verificare lo stato dell'abbonamento.
-2. **Database Log & Statistiche (MySQL)**: Se l'accesso viene autorizzato, l'API utilizza un ORM per registrare l'ingresso su questo database, insieme a statistiche tili all'azienda per rilevare le preferenze dei clienti ed effettuare eventuali controlli anti-frode.
+2. **Database Log & Statistiche (MySQL)**: Se l'accesso viene autorizzato, l'API utilizza un ORM per registrare l'ingresso su questo database in una tabella di Log, insieme a statistiche utili all'azienda per rilevare le preferenze dei clienti ed effettuare eventuali controlli anti-frode. A tal scopo, i timestamp dei Log sono tutti in formato UTC, mentre per i dati delle Statistiche i timestamp vengono convertiti nel fuso orario della nazione della Palestra su cui è avvenuto l'ingresso.
 
 ### Infrastruttura di Rete
 - **Comunicazione Esterna**: Il Tornello, l'API e il Database Gestionale comunicano tramite Internet pubblico utilizzando protocolli sicuri.
@@ -43,9 +43,11 @@ Servizio backend ospitato in cloud che funge da intermediario tra i tornelli e i
 
 ## 🔒 Sicurezza e Autenticazione
 
-La comunicazione tra il tornello e l'API è protetta da un meccanismo di firma digitale HMAC-like.
-* **Richiesta (Client ➡️ API)**: Viene validata tramite un hash SHA-256 creato con `ID_SmartCard + ID_Palestra + Timestamp + Secret`. Se la firma non coincide o il timestamp è troppo vecchio, la richiesta viene respinta.
-* **Risposta (API ➡️ Client)**: Il client verifica una firma di risposta generata tramite l'hash SHA-256 di `ID_SmartCard + Timestamp di invio`.
+La comunicazione tra il tornello e l'API è protetta da un meccanismo di firma digitale HMAC.
+* **Richiesta (Client ➡️ API)**: Viene validata tramite signature HMAC utilizzando SHA-256, creato con `ID_SmartCard + ID_Palestra + Timestamp + Secret`. Se la firma non coincide o il timestamp è troppo vecchio, la richiesta viene respinta.
+* **Risposta (API ➡️ Client)**: Il client verifica una firma di risposta generata HMAC SHA-256 di `ID_SmartCard + Timestamp di invio`.
+
+Le smartcard vengono **pseudonimizzate** prima del salvataggio nella tabella di Log del **Database Log & Statistiche** utilizzando RSA, in modo che la chiave di decifratura non venga mai pubblicata online. I dati nella tabella delle Statistiche vengono opportunamente Anonimizzati tramite **k-anonimity**.
 
 ---
 
