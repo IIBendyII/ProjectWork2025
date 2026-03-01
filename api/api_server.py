@@ -60,40 +60,23 @@ def signatureCheck(idSmartCard:str, idPalestra:int, timestamp:int, signature:str
     else:
         return False
 
-def palestraIdCheck(gestore:Gestionale, idPalestra:int) -> bool:
-    '''
-        Funzione che controlla che l'ID palestra ricevuto 
-        sia presente nella tabella delle palestre del DB Gestionale
-    '''
-    pal = gestore.select_palestra(idPalestra)
-    if pal is not None:
-        return True
-    else:
-        return False
-
-def cardIdCheck(gestore:Gestionale, idSmartCard:str) -> bool:
-    '''
-        Funzione che controlla che lo SmartCard ID ricevuto 
-        sia presente nella tabella dei clienti del DB Gestionale
-    '''
-    card = gestore.select_client(idSmartCard)
-    if card is not None:
-        return True
-    else:
-        return False
-
 def check(gestore: Gestionale, ricezione:float,
-          idSmartCard:str, idPalestra:int, timestamp:int, signature:str) -> bool:
+          idSmartCard:str, idPalestra:int, timestamp:int, signature:str) -> dict:
     '''
         Funzione che effettua in cascata tutti i controlli necessari 
-        a verificare la validità della richiesta ricevuta
+        a verificare la validità della richiesta ricevuta. Se i controlli hanno
+        successo, restituisce un dizionario contenente un oggetto Cliente e Palestra.
     '''
     if timestampCheck(ricezione, timestamp):
         if signatureCheck(idSmartCard, idPalestra, timestamp, signature):
-            if palestraIdCheck(gestore, idPalestra):
-                if cardIdCheck(gestore, idSmartCard):
-                    return True
-    return False
+            # Verifico che la palestra esista
+            palestra = gestore.select_palestra(idPalestra)
+            if palestra is not None:
+                # Verifico che il cliente esista
+                cliente = gestore.select_client(idSmartCard)
+                if cliente is not None:
+                    return {"cliente": cliente, "palestra": palestra}
+    return None
 
 def smartcardCorretto(idSmartCard:str) -> bool:
     '''
@@ -136,7 +119,10 @@ def home():
                         "signature": finalHmac(data["IDSmartCard"], data["Timestamp"])})
     
     abbonamentoValido = False
-    if check(gestore, ricezione, idSmartCard, idPalestra, timestamp, signature):
+    
+    # Controllo la validità della richiesta e mi salvo le informazioni recuperate sul Cliente e Palestra
+    info = check(gestore, ricezione, idSmartCard, idPalestra, timestamp, signature)
+    if info is not None:
         logger.debug("Check passed")
 
         #fa richicesta a selet_abbonamenti,
@@ -148,8 +134,6 @@ def home():
                 abbonamentoValido = True
         
         if abbonamentoValido:
-            cliente = gestore.select_client(idSmartCard)
-            
             #conversione timestamp in datetime per il Database Logs e Statistiche
             timestamp = datetime.fromtimestamp(timestamp=timestamp/1000,tz=timezone.utc)
 
@@ -160,9 +144,8 @@ def home():
 
             #anonimizzazione dati gestionale
             dati = anonimizzatore({
-            "sesso":cliente.sesso,
-            "data_nascita":cliente.data_nascita,
-            "palestra_id":idPalestra,
+            "cliente":info["cliente"],
+            "palestra":info["palestra"],
             "timestamp":timestamp})
 
             #salvo logs e statistiche
