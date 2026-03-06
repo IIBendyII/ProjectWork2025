@@ -14,7 +14,7 @@ handler = logging.StreamHandler(stdout)
 formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(message)s')
 handler.setFormatter(formatter)
 logger.addHandler(handler)
-logger.setLevel(logging.DEBUG)
+logger.setLevel(logging.ERROR)
 
 def prendisegreto(secretFile: str) -> str:
     """Funzione che prende un segreto dalla cartella dei docker secrets"""
