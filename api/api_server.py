@@ -163,7 +163,7 @@ def home():
     
     logger.debug("Abbonamento Valido: %s", abbonamentoValido)
     return jsonify({"valido": abbonamentoValido,
-                    "signature": finalHmac(idSmartCard, timestamp)})
+                    "signature": finalHmac(idSmartCard, int(timestamp.timestamp()*1000))})
 
 if __name__ == "__main__":
     app.run()
