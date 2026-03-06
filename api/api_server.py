@@ -1,4 +1,5 @@
 from flask import Flask, request, jsonify
+from flask_cors import cross_origin
 from db_handler import Gestionale, LogsAndStats
 from privacy_modules import anonimizzatore, pseudonimizzatore, load_encrypt_key
 from datetime import datetime, date, timezone
@@ -13,7 +14,7 @@ handler = logging.StreamHandler(stdout)
 formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(message)s')
 handler.setFormatter(formatter)
 logger.addHandler(handler)
-logger.setLevel(logging.ERROR)
+logger.setLevel(logging.DEBUG)
 
 def prendisegreto(secretFile: str) -> str:
     """Funzione che prende un segreto dalla cartella dei docker secrets"""
@@ -97,6 +98,7 @@ def finalHmac(idSmartCard:str, timestamp:int):
 app = Flask(__name__)
 
 @app.route("/", methods=["POST"])
+@cross_origin()
 def home():
     logger.debug("Connessione stabilita")
     data = request.json
