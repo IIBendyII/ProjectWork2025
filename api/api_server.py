@@ -129,12 +129,12 @@ def home():
 
         #fa richicesta a selet_abbonamenti,
         #se la smart card ricevuta ha un abbonamento valido associato continuano le operazioni
-        abbonamenti = gestore.select_abbonamenti(idSmartCard)
+        abbonamenti = gestore.select_abbonamenti(info["cliente"].id)
         oggi = date.today()
         for x in abbonamenti:
             if x.valido_dal < oggi < x.valido_al:
                 abbonamentoValido = True
-        
+                break
         if abbonamentoValido:
             #conversione timestamp in datetime per il Database Logs e Statistiche
             timestamp = datetime.fromtimestamp(timestamp=timestamp/1000,tz=timezone.utc)
