@@ -137,7 +137,7 @@ def home():
                 break
         if abbonamentoValido:
             #conversione timestamp in datetime per il Database Logs e Statistiche
-            timestamp = datetime.fromtimestamp(timestamp=timestamp/1000,tz=timezone.utc)
+            db_timestamp = datetime.fromtimestamp(timestamp=timestamp/1000,tz=timezone.utc)
 
             #pseudonimizzazione id
             pseudoSmartID = pseudonimizzatore(idSmartCard,
@@ -148,13 +148,13 @@ def home():
             dati = anonimizzatore({
             "cliente":info["cliente"],
             "palestra":info["palestra"],
-            "timestamp":timestamp})
+            "timestamp":db_timestamp})
 
             #salvo logs e statistiche
             magazziniere = LogsAndStats(DATABASE_LS_URI)
             magazziniere.insert_log(smart_card_id=pseudoSmartID,
                                     palestra_id=idPalestra,
-                                    timestamp=timestamp)
+                                    timestamp=db_timestamp)
             magazziniere.insert_stats(sesso=dati["sesso"],
                                       fascia_eta=dati["fascia_eta"],
                                       palestra_id=dati["palestra_id"],
@@ -163,7 +163,7 @@ def home():
     
     logger.debug("Abbonamento Valido: %s", abbonamentoValido)
     return jsonify({"valido": abbonamentoValido,
-                    "signature": finalHmac(idSmartCard, int(timestamp.timestamp()*1000))})
+                    "signature": finalHmac(idSmartCard, timestamp)})
 
 if __name__ == "__main__":
     app.run()
