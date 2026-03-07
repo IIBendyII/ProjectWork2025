@@ -18,7 +18,7 @@ handler.setFormatter(formatter)
 logger.addHandler(handler)
 logger.setLevel(logging.ERROR)
 
-FASCEETA = [(0,19),(20,29),(30,39),(40,49),(50,59),(60,69),(70,200)]
+FASCEETA = [(0,19),(20,29),(30,39),(40,49),(50,59),(60,200)]
 FASCEORARIE = [(7,12),(13,18),(19,24),(0,6)]
 # Creo un dizionario di sigle, derivanti dai nomi delle nazioni del mondo in italiano
 STATO_A_SIGLA = {stato.lower():sigla for sigla, stato in Locale("it").territories.items()}
