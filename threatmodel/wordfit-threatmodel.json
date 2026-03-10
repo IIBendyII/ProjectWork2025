@@ -1,0 +1,1478 @@
+{
+  "version": "2.5.0",
+  "summary": {
+    "title": "WordFit System",
+    "owner": "Cyber20451 - Gruppo 3",
+    "description": "Applicazione per il controllo degli accessi di una palestra. Suddivisa in microservizi: tornello (client), API e DataBase. ",
+    "id": 0
+  },
+  "detail": {
+    "contributors": [
+      {
+        "name": "Riccardo Bandi"
+      },
+      {
+        "name": "Lorenzo Fabbri"
+      },
+      {
+        "name": "Lorenzo Godio"
+      },
+      {
+        "name": "Elia Vele"
+      }
+    ],
+    "diagrams": [
+      {
+        "id": 0,
+        "title": "WordFit System Threat Model",
+        "diagramType": "STRIDE",
+        "placeholder": "New STRIDE diagram description",
+        "thumbnail": "./public/content/images/thumbnail.stride.jpg",
+        "version": "2.5.0",
+        "cells": [
+          {
+            "position": {
+              "x": 890,
+              "y": 210
+            },
+            "size": {
+              "width": 110,
+              "height": 90
+            },
+            "attrs": {
+              "text": {
+                "text": "API"
+              },
+              "body": {
+                "stroke": "#333333",
+                "strokeWidth": 1.5,
+                "strokeDasharray": null
+              }
+            },
+            "visible": true,
+            "shape": "process",
+            "zIndex": 1,
+            "ports": {
+              "groups": {
+                "top": {
+                  "position": "top",
+                  "attrs": {
+                    "circle": {
+                      "r": 4,
+                      "magnet": true,
+                      "stroke": "#5F95FF",
+                      "strokeWidth": 1,
+                      "fill": "#fff",
+                      "style": {
+                        "visibility": "hidden"
+                      }
+                    }
+                  }
+                },
+                "right": {
+                  "position": "right",
+                  "attrs": {
+                    "circle": {
+                      "r": 4,
+                      "magnet": true,
+                      "stroke": "#5F95FF",
+                      "strokeWidth": 1,
+                      "fill": "#fff",
+                      "style": {
+                        "visibility": "hidden"
+                      }
+                    }
+                  }
+                },
+                "bottom": {
+                  "position": "bottom",
+                  "attrs": {
+                    "circle": {
+                      "r": 4,
+                      "magnet": true,
+                      "stroke": "#5F95FF",
+                      "strokeWidth": 1,
+                      "fill": "#fff",
+                      "style": {
+                        "visibility": "hidden"
+                      }
+                    }
+                  }
+                },
+                "left": {
+                  "position": "left",
+                  "attrs": {
+                    "circle": {
+                      "r": 4,
+                      "magnet": true,
+                      "stroke": "#5F95FF",
+                      "strokeWidth": 1,
+                      "fill": "#fff",
+                      "style": {
+                        "visibility": "hidden"
+                      }
+                    }
+                  }
+                }
+              },
+              "items": [
+                {
+                  "group": "top",
+                  "id": "636bd387-fac1-4f55-8d39-8e6a87752e8a"
+                },
+                {
+                  "group": "right",
+                  "id": "e7f00108-868d-4649-823d-d3b3e68e0da1"
+                },
+                {
+                  "group": "bottom",
+                  "id": "ea84b33d-16fd-4aa5-871a-8570ac1a8c13"
+                },
+                {
+                  "group": "left",
+                  "id": "6f448235-a01b-4a57-a010-f0057261ddc9"
+                }
+              ]
+            },
+            "id": "912ff33a-b258-4fd1-8dcf-6517a25858ad",
+            "data": {
+              "type": "tm.Process",
+              "name": "API",
+              "description": "Container Python che gestisce le richieste del client, controlla tali richieste dal DB gestionale e logga gli accessi sul DB di log e statistica.",
+              "outOfScope": false,
+              "isTrustBoundary": false,
+              "reasonOutOfScope": "",
+              "hasOpenThreats": false,
+              "handlesCardPayment": false,
+              "handlesGoodsOrServices": false,
+              "isWebApplication": true,
+              "privilegeLevel": "",
+              "threats": [
+                {
+                  "id": "a9c67cf3-6286-4682-9890-9788d57d5f2a",
+                  "title": "SQL Injection",
+                  "status": "Mitigated",
+                  "severity": "Critical",
+                  "type": "Tampering",
+                  "description": "Un attaccante inserisce codice SQL malevolo nei campi della richiesta (es. ID Palestra) per distruggere o leggere il DB.",
+                  "mitigation": "Utilizzo di libreria ORM (SQLAlchemy) in Python che effettua l'escaping automatico di tutti i parametri. Nessuna query SQL raw viene eseguita.",
+                  "modelType": "STRIDE",
+                  "new": false,
+                  "number": 5,
+                  "score": ""
+                },
+                {
+                  "id": "55cf7bcf-cbc3-43e1-a657-d81ba408db63",
+                  "title": "Manipolazione Container",
+                  "status": "Mitigated",
+                  "severity": "Critical",
+                  "type": "Tampering",
+                  "description": "Capacità di un attaccante di installare funzionalità aggiuntive nel container",
+                  "mitigation": "Container impostato per essere in sola lettura",
+                  "modelType": "STRIDE",
+                  "new": false,
+                  "number": 9,
+                  "score": ""
+                },
+                {
+                  "id": "dde0d918-9fd8-4b4c-9574-d841a23d810a",
+                  "title": "Priviledge escalation",
+                  "status": "Mitigated",
+                  "severity": "Critical",
+                  "type": "Tampering",
+                  "description": "Possibilità di priviledge escalation tramite docker linux capabilities. ",
+                  "mitigation": "Abbiamo rimosso le capabilities (privilegi) che docker assegna in automatico e abbiamo mitigato l'utilizzo di comandi di priviledge escalation (su o sudo)",
+                  "modelType": "STRIDE",
+                  "new": false,
+                  "number": 12,
+                  "score": ""
+                },
+                {
+                  "id": "5b489acf-072a-4454-aed3-d6cb6a0af5d8",
+                  "title": "Root Priviledge",
+                  "status": "Mitigated",
+                  "severity": "High",
+                  "type": "Tampering",
+                  "description": "I container hanno un unico utente root con privilegi elevati",
+                  "mitigation": "Creazione utenti con privilegi minimi",
+                  "modelType": "STRIDE",
+                  "new": false,
+                  "number": 13,
+                  "score": ""
+                },
+                {
+                  "id": "d5cf8945-1da2-4ee3-b3d6-20363db8da1b",
+                  "title": "Failure Enumeration",
+                  "status": "Mitigated",
+                  "severity": "Medium",
+                  "type": "Information disclosure",
+                  "description": "Quando una richiesta fellisce il sistema comunica informazioni dettagliate sul fallimento (es. smartcard errato; timestamp scaduto ecc...)",
+                  "mitigation": "Implementazione sistema fail securely: la risposta al client è la stessa indipendentemente dal fatto che ci sia un errore o che la tessera sia scaduta",
+                  "modelType": "STRIDE",
+                  "new": false,
+                  "number": 14,
+                  "score": ""
+                },
+                {
+                  "id": "4e74206c-24d5-458d-bd35-43c389fb462b",
+                  "title": "Compromissione Credenziali DB/API",
+                  "status": "Mitigated",
+                  "severity": "Critical",
+                  "type": "Information disclosure",
+                  "description": "Esposizione delle password nel repository e possibilità di manipolarle",
+                  "mitigation": "Utilizzo di docker secrets per la gestione dei segreti",
+                  "modelType": "STRIDE",
+                  "new": false,
+                  "number": 15,
+                  "score": ""
+                },
+                {
+                  "id": "b00600ef-ea44-4492-b1eb-2a873fecee56",
+                  "title": "Accesso non autorizzato",
+                  "status": "Mitigated",
+                  "severity": "Critical",
+                  "type": "Spoofing",
+                  "description": "Possibilità di un attaccante di comunicare con l'API semplicemente conoscendone l'indirizzo IP",
+                  "mitigation": "Validazione richieste API tramite firma HMAC",
+                  "modelType": "STRIDE",
+                  "new": false,
+                  "number": 25,
+                  "score": ""
+                },
+                {
+                  "id": "389576dd-1fad-450b-9ea4-031562909ed0",
+                  "title": "Code Injection",
+                  "status": "Mitigated",
+                  "severity": "High",
+                  "type": "Repudiation",
+                  "description": "Possibilità di inserire codice nei campi del body della richiesta API",
+                  "mitigation": "Controllo dei caratteri ammessi in tutti i campi del body (solo numeri per palestra e timestamp, solo caratteri esadecimali per le smartcard e solo caratteri specifici HMAC per la signature)",
+                  "modelType": "STRIDE",
+                  "new": false,
+                  "number": 26,
+                  "score": ""
+                }
+              ],
+              "threatFrequency": {
+                "spoofing": 1,
+                "tampering": 10,
+                "repudiation": 1,
+                "informationDisclosure": 9,
+                "denialOfService": 0,
+                "elevationOfPrivilege": 0
+              }
+            }
+          },
+          {
+            "position": {
+              "x": 1180,
+              "y": 130
+            },
+            "size": {
+              "width": 120,
+              "height": 60
+            },
+            "attrs": {
+              "text": {
+                "text": "DB Gestionale"
+              },
+              "topLine": {
+                "strokeWidth": 1.5,
+                "strokeDasharray": "4 3"
+              },
+              "bottomLine": {
+                "strokeWidth": 1.5,
+                "strokeDasharray": "4 3"
+              }
+            },
+            "visible": true,
+            "shape": "store",
+            "zIndex": 2,
+            "ports": {
+              "groups": {
+                "top": {
+                  "position": "top",
+                  "attrs": {
+                    "circle": {
+                      "r": 4,
+                      "magnet": true,
+                      "stroke": "#5F95FF",
+                      "strokeWidth": 1,
+                      "fill": "#fff",
+                      "style": {
+                        "visibility": "hidden"
+                      }
+                    }
+                  }
+                },
+                "right": {
+                  "position": "right",
+                  "attrs": {
+                    "circle": {
+                      "r": 4,
+                      "magnet": true,
+                      "stroke": "#5F95FF",
+                      "strokeWidth": 1,
+                      "fill": "#fff",
+                      "style": {
+                        "visibility": "hidden"
+                      }
+                    }
+                  }
+                },
+                "bottom": {
+                  "position": "bottom",
+                  "attrs": {
+                    "circle": {
+                      "r": 4,
+                      "magnet": true,
+                      "stroke": "#5F95FF",
+                      "strokeWidth": 1,
+                      "fill": "#fff",
+                      "style": {
+                        "visibility": "hidden"
+                      }
+                    }
+                  }
+                },
+                "left": {
+                  "position": "left",
+                  "attrs": {
+                    "circle": {
+                      "r": 4,
+                      "magnet": true,
+                      "stroke": "#5F95FF",
+                      "strokeWidth": 1,
+                      "fill": "#fff",
+                      "style": {
+                        "visibility": "hidden"
+                      }
+                    }
+                  }
+                }
+              },
+              "items": [
+                {
+                  "group": "top",
+                  "id": "8f5d595c-986d-4da8-8a61-3b674e5e16d9"
+                },
+                {
+                  "group": "right",
+                  "id": "ead86ae5-78cb-4dae-9905-45e40749b12b"
+                },
+                {
+                  "group": "bottom",
+                  "id": "3fbe3188-240e-41af-a944-c2534f2f045d"
+                },
+                {
+                  "group": "left",
+                  "id": "a5c16afa-7009-40af-9ea7-6fb8d343ff05"
+                }
+              ]
+            },
+            "id": "165316d2-d76d-495d-b861-105e0aa69b84",
+            "data": {
+              "type": "tm.Store",
+              "name": "DB Gestionale",
+              "description": "DB contenente informazioni relative a clienti, abbonamenti e palestra. Gestito da enti esterni (Luppoli srl)",
+              "outOfScope": true,
+              "isTrustBoundary": false,
+              "reasonOutOfScope": "Gestito da enti esterni (Luppoli srl)",
+              "hasOpenThreats": false,
+              "isALog": false,
+              "isEncrypted": false,
+              "isSigned": false,
+              "storesCredentials": false,
+              "storesInventory": false,
+              "threats": []
+            }
+          },
+          {
+            "position": {
+              "x": 1235,
+              "y": 240
+            },
+            "size": {
+              "width": 120,
+              "height": 60
+            },
+            "attrs": {
+              "text": {
+                "text": "DB Log & Stats"
+              },
+              "topLine": {
+                "stroke": "red",
+                "strokeWidth": 2.5,
+                "strokeDasharray": null
+              },
+              "bottomLine": {
+                "stroke": "red",
+                "strokeWidth": 2.5,
+                "strokeDasharray": null
+              }
+            },
+            "visible": true,
+            "shape": "store",
+            "zIndex": 3,
+            "ports": {
+              "groups": {
+                "top": {
+                  "position": "top",
+                  "attrs": {
+                    "circle": {
+                      "r": 4,
+                      "magnet": true,
+                      "stroke": "#5F95FF",
+                      "strokeWidth": 1,
+                      "fill": "#fff",
+                      "style": {
+                        "visibility": "hidden"
+                      }
+                    }
+                  }
+                },
+                "right": {
+                  "position": "right",
+                  "attrs": {
+                    "circle": {
+                      "r": 4,
+                      "magnet": true,
+                      "stroke": "#5F95FF",
+                      "strokeWidth": 1,
+                      "fill": "#fff",
+                      "style": {
+                        "visibility": "hidden"
+                      }
+                    }
+                  }
+                },
+                "bottom": {
+                  "position": "bottom",
+                  "attrs": {
+                    "circle": {
+                      "r": 4,
+                      "magnet": true,
+                      "stroke": "#5F95FF",
+                      "strokeWidth": 1,
+                      "fill": "#fff",
+                      "style": {
+                        "visibility": "hidden"
+                      }
+                    }
+                  }
+                },
+                "left": {
+                  "position": "left",
+                  "attrs": {
+                    "circle": {
+                      "r": 4,
+                      "magnet": true,
+                      "stroke": "#5F95FF",
+                      "strokeWidth": 1,
+                      "fill": "#fff",
+                      "style": {
+                        "visibility": "hidden"
+                      }
+                    }
+                  }
+                }
+              },
+              "items": [
+                {
+                  "group": "top",
+                  "id": "8f5d595c-986d-4da8-8a61-3b674e5e16d9"
+                },
+                {
+                  "group": "right",
+                  "id": "ead86ae5-78cb-4dae-9905-45e40749b12b"
+                },
+                {
+                  "group": "bottom",
+                  "id": "3fbe3188-240e-41af-a944-c2534f2f045d"
+                },
+                {
+                  "group": "left",
+                  "id": "a5c16afa-7009-40af-9ea7-6fb8d343ff05"
+                }
+              ]
+            },
+            "id": "0b9721df-5965-4ae9-9232-89be6739fcce",
+            "data": {
+              "type": "tm.Store",
+              "name": "DB Log & Stats",
+              "description": "DB contenente log di accesso e dati anonimizzati per statistiche",
+              "outOfScope": false,
+              "isTrustBoundary": false,
+              "reasonOutOfScope": "",
+              "hasOpenThreats": true,
+              "isALog": true,
+              "isEncrypted": false,
+              "isSigned": false,
+              "storesCredentials": false,
+              "storesInventory": false,
+              "threats": [
+                {
+                  "id": "72b9d810-fcb5-4071-a8e2-e205f074363d",
+                  "title": "Data Breach di dati sensibili",
+                  "status": "Mitigated",
+                  "severity": "High",
+                  "type": "Information disclosure",
+                  "description": "In caso di accesso non autorizzato al DB, l'attaccante potrebbe profilare gli utenti e conoscere le loro abitudini.",
+                  "mitigation": "- Pseudonimizzazione ID SmartCard (Hash+Salt).\n- K-Anonymity per le statistiche (Fasce d'età, no date precise).\n- Cancellazione automatica log > 3 mesi (Event Scheduler).",
+                  "modelType": "STRIDE",
+                  "new": false,
+                  "number": 7,
+                  "score": ""
+                },
+                {
+                  "id": "abb8d0fc-081a-4a7d-b501-758486465148",
+                  "title": "Manipolazione Container",
+                  "status": "Mitigated",
+                  "severity": "Critical",
+                  "type": "Tampering",
+                  "description": "Capacità di un attaccante di installare funzionalità aggiuntive nel container",
+                  "mitigation": "Container impostato per essere in sola lettura",
+                  "modelType": "STRIDE",
+                  "new": false,
+                  "number": 8,
+                  "score": ""
+                },
+                {
+                  "id": "5c521a2c-7226-48f5-9500-5a5c1c576686",
+                  "title": "Priviledge escalation",
+                  "status": "Mitigated",
+                  "severity": "Critical",
+                  "type": "Tampering",
+                  "description": "Possibilità di priviledge escalation tramite docker linux capabilities. ",
+                  "mitigation": "Abbiamo rimosso le capabilities (privilegi) che docker assegna in automatico e abbiamo mitigato l'utilizzo di comandi di priviledge escalation (su o sudo)",
+                  "modelType": "STRIDE",
+                  "new": false,
+                  "number": 10,
+                  "score": ""
+                },
+                {
+                  "id": "8703d534-12a4-4b13-967f-67ab66768eb3",
+                  "title": "Root Priviledge",
+                  "status": "Mitigated",
+                  "severity": "High",
+                  "type": "Tampering",
+                  "description": "I container hanno un unico utente root con privilegi elevati",
+                  "mitigation": "Creazione utenti con privilegi minimi",
+                  "modelType": "STRIDE",
+                  "new": false,
+                  "number": 11,
+                  "score": ""
+                },
+                {
+                  "id": "e6402585-7034-42d2-93ce-7cf6b821c72d",
+                  "title": "Esposizione delle password nel repository ",
+                  "status": "Mitigated",
+                  "severity": "Critical",
+                  "type": "Information disclosure",
+                  "description": "Esposizione delle password nel repository e possibilità di manipolarle",
+                  "mitigation": "Utilizzo di docker secrets per la gestione dei segreti",
+                  "modelType": "STRIDE",
+                  "new": false,
+                  "number": 16,
+                  "score": ""
+                },
+                {
+                  "id": "5be83d47-4039-472b-8a2f-8a952a5d25b9",
+                  "title": "Attacco diretto al DB",
+                  "status": "Mitigated",
+                  "severity": "High",
+                  "type": "Tampering",
+                  "description": "Possibilità di attacco diretto al DB semplicemente conoscendone l'indirizzo IP.",
+                  "mitigation": "Isolamento della rete di backend: per arrivare al DB bisogna passare per l'API",
+                  "modelType": "STRIDE",
+                  "new": false,
+                  "number": 19,
+                  "score": ""
+                },
+                {
+                  "id": "ba4adcd8-6872-42e6-937b-cd4e7db4b4d6",
+                  "title": "Unsorted Matching Attack",
+                  "status": "Mitigated",
+                  "severity": "Medium",
+                  "type": "Information disclosure",
+                  "description": "Possibilità da parte di un attaccante di fare join della tabella dei logs e delle statistiche in quanto gli indici sono ordinati. Questo comporterebbe ad un possibile associazione di informazioni ad un determinato pseudonimo.",
+                  "mitigation": "Utilizzo di UUIDv4 come indice per le righe della tabella delle statistiche",
+                  "modelType": "STRIDE",
+                  "new": false,
+                  "number": 23,
+                  "score": ""
+                },
+                {
+                  "id": "51762209-3ae3-485a-ae00-19b2be2d5fa4",
+                  "title": "Manomissione o esfiltrazione dati dal DB",
+                  "status": "Mitigated",
+                  "severity": "High",
+                  "type": "Tampering",
+                  "description": "Possibilità di un attaccante di utilizzare l'utente MySQL dell'API per estrarre o manipolare i dati del DB",
+                  "mitigation": "Creazione di un utente specifico per l'accesso al DB da parte dell'API con solo privilegio minimo di INSERT",
+                  "modelType": "STRIDE",
+                  "new": false,
+                  "number": 24,
+                  "score": ""
+                },
+                {
+                  "id": "6ddcf95a-7adc-44d9-866f-7f7579cb4d0b",
+                  "title": "New STRIDE threat",
+                  "status": "Open",
+                  "severity": "TBD",
+                  "type": "Repudiation",
+                  "description": "Provide a description for this threat",
+                  "mitigation": "Provide remediation for this threat or a reason if status is N/A",
+                  "modelType": "STRIDE",
+                  "new": true,
+                  "number": 27,
+                  "score": ""
+                }
+              ],
+              "threatFrequency": {
+                "tampering": 5,
+                "repudiation": 0,
+                "informationDisclosure": 4,
+                "denialOfService": 0
+              }
+            },
+            "tools": {
+              "items": [
+                "boundary",
+                "button-remove"
+              ],
+              "name": null
+            }
+          },
+          {
+            "position": {
+              "x": 410,
+              "y": 210
+            },
+            "size": {
+              "width": 120,
+              "height": 110
+            },
+            "attrs": {
+              "text": {
+                "text": "Client (tornello)"
+              },
+              "body": {
+                "stroke": "#333333",
+                "strokeWidth": 1.5,
+                "strokeDasharray": null
+              }
+            },
+            "visible": true,
+            "shape": "process",
+            "zIndex": 4,
+            "ports": {
+              "groups": {
+                "top": {
+                  "position": "top",
+                  "attrs": {
+                    "circle": {
+                      "r": 4,
+                      "magnet": true,
+                      "stroke": "#5F95FF",
+                      "strokeWidth": 1,
+                      "fill": "#fff",
+                      "style": {
+                        "visibility": "hidden"
+                      }
+                    }
+                  }
+                },
+                "right": {
+                  "position": "right",
+                  "attrs": {
+                    "circle": {
+                      "r": 4,
+                      "magnet": true,
+                      "stroke": "#5F95FF",
+                      "strokeWidth": 1,
+                      "fill": "#fff",
+                      "style": {
+                        "visibility": "hidden"
+                      }
+                    }
+                  }
+                },
+                "bottom": {
+                  "position": "bottom",
+                  "attrs": {
+                    "circle": {
+                      "r": 4,
+                      "magnet": true,
+                      "stroke": "#5F95FF",
+                      "strokeWidth": 1,
+                      "fill": "#fff",
+                      "style": {
+                        "visibility": "hidden"
+                      }
+                    }
+                  }
+                },
+                "left": {
+                  "position": "left",
+                  "attrs": {
+                    "circle": {
+                      "r": 4,
+                      "magnet": true,
+                      "stroke": "#5F95FF",
+                      "strokeWidth": 1,
+                      "fill": "#fff",
+                      "style": {
+                        "visibility": "hidden"
+                      }
+                    }
+                  }
+                }
+              },
+              "items": [
+                {
+                  "group": "top",
+                  "id": "636bd387-fac1-4f55-8d39-8e6a87752e8a"
+                },
+                {
+                  "group": "right",
+                  "id": "e7f00108-868d-4649-823d-d3b3e68e0da1"
+                },
+                {
+                  "group": "bottom",
+                  "id": "ea84b33d-16fd-4aa5-871a-8570ac1a8c13"
+                },
+                {
+                  "group": "left",
+                  "id": "6f448235-a01b-4a57-a010-f0057261ddc9"
+                }
+              ]
+            },
+            "id": "c0a96e9c-35de-4a70-9126-25532d0d4514",
+            "data": {
+              "type": "tm.Process",
+              "name": "Client (tornello)",
+              "description": "Tornello sul quale un utente inserisce la smartcard.",
+              "outOfScope": false,
+              "isTrustBoundary": false,
+              "reasonOutOfScope": "",
+              "hasOpenThreats": false,
+              "handlesCardPayment": false,
+              "handlesGoodsOrServices": false,
+              "isWebApplication": false,
+              "privilegeLevel": "",
+              "threats": [
+                {
+                  "id": "6586f95c-1127-45d7-a06b-623b190fee25",
+                  "title": "Manipolazione Smartcard ID",
+                  "status": "Mitigated",
+                  "severity": "High",
+                  "type": "Tampering",
+                  "description": "Possibilità di inserire codice al posto del parametro Smartcard ID. ",
+                  "mitigation": "Controllo caratteri, ammessi solo sei cifre alfanumeriche.",
+                  "modelType": "STRIDE",
+                  "new": false,
+                  "number": 1,
+                  "score": ""
+                }
+              ],
+              "threatFrequency": {
+                "spoofing": 0,
+                "tampering": 1,
+                "repudiation": 0,
+                "informationDisclosure": 0,
+                "denialOfService": 0,
+                "elevationOfPrivilege": 0
+              }
+            }
+          },
+          {
+            "position": {
+              "x": 413.75,
+              "y": 440
+            },
+            "size": {
+              "width": 112.5,
+              "height": 60
+            },
+            "attrs": {
+              "text": {
+                "text": "Attacker"
+              },
+              "body": {
+                "stroke": "#333333",
+                "strokeWidth": 1.5,
+                "strokeDasharray": null
+              }
+            },
+            "visible": true,
+            "shape": "actor",
+            "zIndex": 5,
+            "ports": {
+              "groups": {
+                "top": {
+                  "position": "top",
+                  "attrs": {
+                    "circle": {
+                      "r": 4,
+                      "magnet": true,
+                      "stroke": "#5F95FF",
+                      "strokeWidth": 1,
+                      "fill": "#fff",
+                      "style": {
+                        "visibility": "hidden"
+                      }
+                    }
+                  }
+                },
+                "right": {
+                  "position": "right",
+                  "attrs": {
+                    "circle": {
+                      "r": 4,
+                      "magnet": true,
+                      "stroke": "#5F95FF",
+                      "strokeWidth": 1,
+                      "fill": "#fff",
+                      "style": {
+                        "visibility": "hidden"
+                      }
+                    }
+                  }
+                },
+                "bottom": {
+                  "position": "bottom",
+                  "attrs": {
+                    "circle": {
+                      "r": 4,
+                      "magnet": true,
+                      "stroke": "#5F95FF",
+                      "strokeWidth": 1,
+                      "fill": "#fff",
+                      "style": {
+                        "visibility": "hidden"
+                      }
+                    }
+                  }
+                },
+                "left": {
+                  "position": "left",
+                  "attrs": {
+                    "circle": {
+                      "r": 4,
+                      "magnet": true,
+                      "stroke": "#5F95FF",
+                      "strokeWidth": 1,
+                      "fill": "#fff",
+                      "style": {
+                        "visibility": "hidden"
+                      }
+                    }
+                  }
+                }
+              },
+              "items": [
+                {
+                  "group": "top",
+                  "id": "e5d199b2-7f0a-4fd1-8f39-731daf349040"
+                },
+                {
+                  "group": "right",
+                  "id": "d729dc76-162f-4723-b715-a7177ea2672a"
+                },
+                {
+                  "group": "bottom",
+                  "id": "7db41b96-c20b-49c9-a022-54fb761f2078"
+                },
+                {
+                  "group": "left",
+                  "id": "37c2a787-ac88-432e-a139-e439f685555b"
+                }
+              ]
+            },
+            "id": "1a194942-0d07-431e-a6e6-d976a610e437",
+            "data": {
+              "type": "tm.Actor",
+              "name": "Attacker",
+              "description": "Omino cattivo (palestrato)",
+              "isTrustBoundary": false,
+              "outOfScope": false,
+              "reasonOutOfScope": "",
+              "hasOpenThreats": false,
+              "providesAuthentication": false,
+              "threats": []
+            }
+          },
+          {
+            "position": {
+              "x": 98,
+              "y": 240
+            },
+            "size": {
+              "width": 112.5,
+              "height": 60
+            },
+            "attrs": {
+              "text": {
+                "text": "Utente"
+              },
+              "body": {
+                "stroke": "#333333",
+                "strokeWidth": 1.5,
+                "strokeDasharray": null
+              }
+            },
+            "visible": true,
+            "shape": "actor",
+            "zIndex": 6,
+            "ports": {
+              "groups": {
+                "top": {
+                  "position": "top",
+                  "attrs": {
+                    "circle": {
+                      "r": 4,
+                      "magnet": true,
+                      "stroke": "#5F95FF",
+                      "strokeWidth": 1,
+                      "fill": "#fff",
+                      "style": {
+                        "visibility": "hidden"
+                      }
+                    }
+                  }
+                },
+                "right": {
+                  "position": "right",
+                  "attrs": {
+                    "circle": {
+                      "r": 4,
+                      "magnet": true,
+                      "stroke": "#5F95FF",
+                      "strokeWidth": 1,
+                      "fill": "#fff",
+                      "style": {
+                        "visibility": "hidden"
+                      }
+                    }
+                  }
+                },
+                "bottom": {
+                  "position": "bottom",
+                  "attrs": {
+                    "circle": {
+                      "r": 4,
+                      "magnet": true,
+                      "stroke": "#5F95FF",
+                      "strokeWidth": 1,
+                      "fill": "#fff",
+                      "style": {
+                        "visibility": "hidden"
+                      }
+                    }
+                  }
+                },
+                "left": {
+                  "position": "left",
+                  "attrs": {
+                    "circle": {
+                      "r": 4,
+                      "magnet": true,
+                      "stroke": "#5F95FF",
+                      "strokeWidth": 1,
+                      "fill": "#fff",
+                      "style": {
+                        "visibility": "hidden"
+                      }
+                    }
+                  }
+                }
+              },
+              "items": [
+                {
+                  "group": "top",
+                  "id": "e5d199b2-7f0a-4fd1-8f39-731daf349040"
+                },
+                {
+                  "group": "right",
+                  "id": "d729dc76-162f-4723-b715-a7177ea2672a"
+                },
+                {
+                  "group": "bottom",
+                  "id": "7db41b96-c20b-49c9-a022-54fb761f2078"
+                },
+                {
+                  "group": "left",
+                  "id": "37c2a787-ac88-432e-a139-e439f685555b"
+                }
+              ]
+            },
+            "id": "4cd33b49-5cd9-4c3e-b5f1-78356a102312",
+            "data": {
+              "type": "tm.Actor",
+              "name": "Utente",
+              "description": "Utente palestrato (forse)",
+              "isTrustBoundary": false,
+              "outOfScope": false,
+              "reasonOutOfScope": "",
+              "hasOpenThreats": false,
+              "providesAuthentication": true,
+              "threats": []
+            }
+          },
+          {
+            "shape": "flow",
+            "attrs": {
+              "line": {
+                "stroke": "#333333",
+                "targetMarker": {
+                  "name": "block"
+                },
+                "sourceMarker": {
+                  "name": "block"
+                },
+                "strokeDasharray": null
+              }
+            },
+            "width": 200,
+            "height": 100,
+            "zIndex": 10,
+            "connector": "smooth",
+            "data": {
+              "type": "tm.Flow",
+              "name": "Select",
+              "description": "Select di informazioni inerenti a: clienti, abbonamenti e palestre",
+              "outOfScope": false,
+              "isTrustBoundary": false,
+              "reasonOutOfScope": "",
+              "hasOpenThreats": false,
+              "isBidirectional": true,
+              "isEncrypted": true,
+              "isPublicNetwork": false,
+              "protocol": "MySql Client/server",
+              "threats": []
+            },
+            "labels": [
+              "Select"
+            ],
+            "id": "c2ad8878-e917-45c4-ba94-9cf606622052",
+            "source": {
+              "cell": "912ff33a-b258-4fd1-8dcf-6517a25858ad",
+              "port": "636bd387-fac1-4f55-8d39-8e6a87752e8a"
+            },
+            "target": {
+              "cell": "165316d2-d76d-495d-b861-105e0aa69b84",
+              "port": "a5c16afa-7009-40af-9ea7-6fb8d343ff05"
+            },
+            "vertices": [
+              {
+                "x": 1050,
+                "y": 150
+              }
+            ]
+          },
+          {
+            "shape": "flow",
+            "attrs": {
+              "line": {
+                "stroke": "#333333",
+                "targetMarker": {
+                  "name": "block"
+                },
+                "sourceMarker": {
+                  "name": ""
+                },
+                "strokeDasharray": null
+              }
+            },
+            "width": 200,
+            "height": 100,
+            "zIndex": 10,
+            "connector": "smooth",
+            "data": {
+              "type": "tm.Flow",
+              "name": "Inserimento tessera",
+              "description": "Inserimento tessera",
+              "outOfScope": false,
+              "isTrustBoundary": false,
+              "reasonOutOfScope": "",
+              "hasOpenThreats": false,
+              "isBidirectional": false,
+              "isEncrypted": false,
+              "isPublicNetwork": false,
+              "protocol": "Manuale",
+              "threats": []
+            },
+            "labels": [
+              "Inserimento tessera"
+            ],
+            "id": "f6121cec-bfba-4941-b245-b9ce68f53aa1",
+            "source": {
+              "cell": "4cd33b49-5cd9-4c3e-b5f1-78356a102312",
+              "port": "d729dc76-162f-4723-b715-a7177ea2672a"
+            },
+            "target": {
+              "cell": "c0a96e9c-35de-4a70-9126-25532d0d4514",
+              "port": "6f448235-a01b-4a57-a010-f0057261ddc9"
+            }
+          },
+          {
+            "shape": "flow",
+            "attrs": {
+              "line": {
+                "stroke": "#333333",
+                "targetMarker": {
+                  "name": "block"
+                },
+                "sourceMarker": {
+                  "name": ""
+                },
+                "strokeDasharray": null
+              }
+            },
+            "width": 200,
+            "height": 100,
+            "zIndex": 10,
+            "connector": "smooth",
+            "data": {
+              "type": "tm.Flow",
+              "name": "Client Threats",
+              "description": "",
+              "outOfScope": false,
+              "isTrustBoundary": false,
+              "reasonOutOfScope": "",
+              "hasOpenThreats": false,
+              "isBidirectional": false,
+              "isEncrypted": false,
+              "isPublicNetwork": false,
+              "protocol": "",
+              "threats": []
+            },
+            "labels": [
+              "Client Threats"
+            ],
+            "id": "787488d3-4e5c-4089-b5e0-82edf63fdce6",
+            "source": {
+              "cell": "1a194942-0d07-431e-a6e6-d976a610e437",
+              "port": "e5d199b2-7f0a-4fd1-8f39-731daf349040"
+            },
+            "target": {
+              "cell": "c0a96e9c-35de-4a70-9126-25532d0d4514",
+              "port": "ea84b33d-16fd-4aa5-871a-8570ac1a8c13"
+            }
+          },
+          {
+            "shape": "trust-boundary-curve",
+            "width": 200,
+            "height": 100,
+            "zIndex": 10,
+            "connector": "smooth",
+            "data": {
+              "type": "tm.Boundary",
+              "name": "Internet",
+              "description": "",
+              "isTrustBoundary": true,
+              "hasOpenThreats": false
+            },
+            "labels": [
+              "Internet"
+            ],
+            "id": "a10dee1f-aafe-45fa-8936-9b8f874e4f21",
+            "source": {
+              "x": 670,
+              "y": 630
+            },
+            "target": {
+              "x": 660,
+              "y": 0
+            }
+          },
+          {
+            "shape": "flow",
+            "attrs": {
+              "line": {
+                "stroke": "#333333",
+                "targetMarker": {
+                  "name": "block"
+                },
+                "sourceMarker": {
+                  "name": ""
+                },
+                "strokeDasharray": null
+              }
+            },
+            "width": 200,
+            "height": 100,
+            "zIndex": 10,
+            "connector": "smooth",
+            "data": {
+              "type": "tm.Flow",
+              "name": "Insert",
+              "description": "Inserimento di log e statistiche",
+              "outOfScope": false,
+              "isTrustBoundary": false,
+              "reasonOutOfScope": "",
+              "hasOpenThreats": false,
+              "isBidirectional": false,
+              "isEncrypted": false,
+              "isPublicNetwork": false,
+              "protocol": "MySql Client/Server",
+              "threats": [],
+              "threatFrequency": {
+                "tampering": 0,
+                "informationDisclosure": 0,
+                "denialOfService": 0
+              }
+            },
+            "labels": [
+              "Insert"
+            ],
+            "id": "dde329b5-9ceb-469c-a127-cb61575dc595",
+            "source": {
+              "cell": "912ff33a-b258-4fd1-8dcf-6517a25858ad",
+              "port": "e7f00108-868d-4649-823d-d3b3e68e0da1"
+            },
+            "target": {
+              "cell": "0b9721df-5965-4ae9-9232-89be6739fcce",
+              "port": "a5c16afa-7009-40af-9ea7-6fb8d343ff05"
+            },
+            "vertices": [
+              {
+                "x": 1120,
+                "y": 255
+              }
+            ]
+          },
+          {
+            "shape": "flow",
+            "attrs": {
+              "line": {
+                "stroke": "red",
+                "strokeWidth": 2.5,
+                "targetMarker": {
+                  "name": "block"
+                },
+                "sourceMarker": {
+                  "name": ""
+                },
+                "strokeDasharray": null
+              }
+            },
+            "width": 200,
+            "height": 100,
+            "zIndex": 10,
+            "connector": "smooth",
+            "data": {
+              "type": "tm.Flow",
+              "name": "API Threats",
+              "description": "",
+              "outOfScope": false,
+              "isTrustBoundary": false,
+              "reasonOutOfScope": "",
+              "hasOpenThreats": true,
+              "isBidirectional": false,
+              "isEncrypted": false,
+              "isPublicNetwork": false,
+              "protocol": "",
+              "threats": [
+                {
+                  "id": "b2c49ca8-3062-4776-92c1-72b3bf84cb99",
+                  "title": "DoS",
+                  "status": "Open",
+                  "severity": "High",
+                  "type": "Denial of service",
+                  "description": "Denial of Service",
+                  "mitigation": "Limitare richieste dello stesso indirizzo IP ad 1 al secondo (tramite firewall).",
+                  "modelType": "STRIDE",
+                  "new": false,
+                  "number": 2,
+                  "score": ""
+                }
+              ],
+              "threatFrequency": {
+                "tampering": 0,
+                "informationDisclosure": 0,
+                "denialOfService": 1
+              }
+            },
+            "labels": [
+              "API Threats"
+            ],
+            "id": "000b9011-f0b1-485f-be44-bfab111a73db",
+            "source": {
+              "cell": "1a194942-0d07-431e-a6e6-d976a610e437",
+              "port": "d729dc76-162f-4723-b715-a7177ea2672a"
+            },
+            "target": {
+              "cell": "912ff33a-b258-4fd1-8dcf-6517a25858ad",
+              "port": "ea84b33d-16fd-4aa5-871a-8570ac1a8c13"
+            },
+            "vertices": [
+              {
+                "x": 760,
+                "y": 450
+              }
+            ]
+          },
+          {
+            "shape": "flow",
+            "attrs": {
+              "line": {
+                "stroke": "#333333",
+                "targetMarker": {
+                  "name": "block"
+                },
+                "sourceMarker": {
+                  "name": ""
+                },
+                "strokeDasharray": null
+              }
+            },
+            "width": 200,
+            "height": 100,
+            "zIndex": 10,
+            "connector": "smooth",
+            "data": {
+              "type": "tm.Flow",
+              "name": "Risposta",
+              "description": "Risposta di avvenuto controllo dell'abbonamento",
+              "outOfScope": false,
+              "isTrustBoundary": false,
+              "reasonOutOfScope": "",
+              "hasOpenThreats": false,
+              "isBidirectional": false,
+              "isEncrypted": true,
+              "isPublicNetwork": false,
+              "protocol": "HTTP",
+              "threats": [
+                {
+                  "id": "6afd4bd1-3825-4fdd-ade4-929ee36820e8",
+                  "title": "Attacco MITM",
+                  "status": "Mitigated",
+                  "severity": "High",
+                  "type": "Tampering",
+                  "description": "Attacco MITM",
+                  "mitigation": "Utilizzo HTTPs tramite Google Cloud Run",
+                  "modelType": "STRIDE",
+                  "new": false,
+                  "number": 22,
+                  "score": ""
+                }
+              ],
+              "threatFrequency": {
+                "tampering": 1,
+                "informationDisclosure": 0,
+                "denialOfService": 0
+              }
+            },
+            "labels": [
+              "Risposta"
+            ],
+            "id": "67f30fec-789c-4056-91c6-ef9ad4d1065f",
+            "source": {
+              "cell": "912ff33a-b258-4fd1-8dcf-6517a25858ad",
+              "port": "6f448235-a01b-4a57-a010-f0057261ddc9"
+            },
+            "target": {
+              "cell": "c0a96e9c-35de-4a70-9126-25532d0d4514",
+              "port": "e7f00108-868d-4649-823d-d3b3e68e0da1"
+            },
+            "vertices": [
+              {
+                "x": 700,
+                "y": 360
+              }
+            ]
+          },
+          {
+            "shape": "flow",
+            "attrs": {
+              "line": {
+                "stroke": "#333333",
+                "targetMarker": {
+                  "name": "block"
+                },
+                "sourceMarker": {
+                  "name": ""
+                },
+                "strokeDasharray": null
+              }
+            },
+            "width": 200,
+            "height": 100,
+            "zIndex": 10,
+            "connector": "smooth",
+            "data": {
+              "type": "tm.Flow",
+              "name": "Richiesta",
+              "description": "Richiesta di verifica di validità dell'abbonamento",
+              "outOfScope": false,
+              "isTrustBoundary": false,
+              "reasonOutOfScope": "",
+              "hasOpenThreats": false,
+              "isBidirectional": false,
+              "isEncrypted": true,
+              "isPublicNetwork": true,
+              "protocol": "",
+              "threats": [
+                {
+                  "id": "dd9b6f09-3a92-46a0-9801-8bbcad0b4908",
+                  "title": "Repeat Attack",
+                  "status": "Mitigated",
+                  "severity": "Low",
+                  "type": "Tampering",
+                  "description": "Un attaccante intercetta una richiesta valida di apertura tornello e la reinvia identica in futuro per entrare senza permesso.",
+                  "mitigation": "Implementazione di firma HMAC con Timestamp. L'API scarta qualsiasi richiesta con timestamp più vecchio di 10 secondi.",
+                  "modelType": "STRIDE",
+                  "new": false,
+                  "number": 3,
+                  "score": ""
+                },
+                {
+                  "id": "b96031b8-ae57-414d-a8fa-8dac69b0c02d",
+                  "title": "MITM (Man in the Middle)",
+                  "status": "Mitigated",
+                  "severity": "Medium",
+                  "type": "Information disclosure",
+                  "description": "Un attaccante sulla rete ascolta il traffico per leggere ID utente o chiavi API.",
+                  "mitigation": "Utilizzo obbligatorio di TLS (HTTPS) per cifrare la comunicazione tramite Google Cloud Run. La chiave API non viene mai inviata in chiaro (usata solo per firmare HMAC).",
+                  "modelType": "STRIDE",
+                  "new": false,
+                  "number": 4,
+                  "score": ""
+                }
+              ],
+              "threatFrequency": {
+                "tampering": 3,
+                "informationDisclosure": 4,
+                "denialOfService": 0
+              }
+            },
+            "labels": [
+              "Richiesta"
+            ],
+            "id": "524f0f01-b11f-4a69-abab-4cbeb0f05d35",
+            "source": {
+              "cell": "c0a96e9c-35de-4a70-9126-25532d0d4514",
+              "port": "e7f00108-868d-4649-823d-d3b3e68e0da1"
+            },
+            "target": {
+              "cell": "912ff33a-b258-4fd1-8dcf-6517a25858ad",
+              "port": "6f448235-a01b-4a57-a010-f0057261ddc9"
+            },
+            "vertices": [
+              {
+                "x": 700,
+                "y": 160
+              }
+            ]
+          }
+        ],
+        "description": "Threat Modeling dell'applicazione"
+      }
+    ],
+    "diagramTop": 1,
+    "reviewer": "Irene Trezza",
+    "threatTop": 28
+  }
+}
