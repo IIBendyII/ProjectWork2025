@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tornello Palestra - Sistema di Accesso</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🏋️ Tornello Palestra</h1>
+            <p>Sistema di Controllo Accessi Sicuro</p>
+        </div>
+
+        <div class="content">
+            <!-- Sezione Configurazione -->
+            <div id="configSection" class="config-section">
+                <h2 style="margin-bottom: 20px; color: #333;">Configurazione Iniziale</h2>
+                
+                <div class="form-group">
+                    <label for="gymId">ID Palestra</label>
+                    <input type="text" id="gymId" placeholder="es. 25" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="apiKey">Chiave API</label>
+                    <input type="password" id="apiKey" placeholder="Inserisci la chiave API" required>
+                </div>
+
+                <button class="btn btn-primary" onclick="saveConfig()">Salva Configurazione</button>
+
+                <!--<div class="info-box">
+                    <strong>ℹ️ Nota sulla Sicurezza:</strong> La chiave API è protetta tramite HMAC signature e non viene mai trasmessa in chiaro. Il sistema utilizza TOTP per prevenire replay attacks.
+                </div>-->
+
+                <div class="info-box" style="margin-top: 10px; background: #dbeafe; border: 2px solid #3b82f6;">
+                    <strong>🔗 API Endpoint:</strong> http://127.0.0.1:8000
+                </div>
+            </div>
+
+            <!-- Sezione Controllo Accesso -->
+            <div id="accessSection" class="hidden">
+                <h2 style="margin-bottom: 20px; color: #333;">Controllo Accesso</h2>
+                
+                <div class="turnstile-animation">
+                    <div class="turnstile-post"></div>
+                    <div class="turnstile-bar" id="turnstileBar"></div>
+                </div>
+
+                <div class="form-group">
+                    <label for="smartCardId">ID Smart Card</label>
+                    <input 
+                        type="text" 
+                        id="smartCardId" 
+                        placeholder="es. ABC123XYZ" 
+                        pattern="[A-Z0-9]+"
+                        title="Solo lettere maiuscole e numeri"
+                        required
+                        style="text-transform: uppercase;"
+                    >
+                </div>
+
+                <button class="btn btn-primary" id="checkAccessBtn" onclick="checkAccess()">
+                    Verifica Accesso
+                </button>
+
+                <button class="btn btn-success" onclick="showConfig()">
+                    ⚙️ Modifica Configurazione
+                </button>
+
+                <div id="statusMessage"></div>
+
+                <div class="info-box">
+                    <strong>📋 Palestra:</strong> <span id="displayGymId"></span><br>
+                    <!--<strong>🔒 Sicurezza:</strong> HMAC-SHA256 con TOTP<br>-->
+                    <!--<strong>🔗 API:</strong> http://127.0.0.1:8000-->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>

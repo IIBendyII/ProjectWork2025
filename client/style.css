@@ -1,0 +1,255 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+}
+
+.container {
+    background: white;
+    border-radius: 20px;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+    max-width: 600px;
+    width: 100%;
+    overflow: hidden;
+}
+
+.header {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 30px;
+    text-align: center;
+}
+
+.header h1 {
+    font-size: 28px;
+    margin-bottom: 10px;
+}
+
+.header p {
+    opacity: 0.9;
+    font-size: 14px;
+}
+
+.content {
+    padding: 30px;
+}
+
+.config-section {
+    margin-bottom: 25px;
+}
+
+.form-group {
+    margin-bottom: 20px;
+}
+
+label {
+    display: block;
+    margin-bottom: 8px;
+    color: #333;
+    font-weight: 600;
+    font-size: 14px;
+}
+
+input {
+    width: 100%;
+    padding: 12px 15px;
+    border: 2px solid #e0e0e0;
+    border-radius: 8px;
+    font-size: 16px;
+    transition: border-color 0.3s;
+}
+
+input:focus {
+    outline: none;
+    border-color: #667eea;
+}
+
+.btn {
+    width: 100%;
+    padding: 14px;
+    border: none;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.btn-primary {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+}
+
+.btn-primary:hover:not(:disabled) {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 20px rgba(102, 126, 234, 0.4);
+}
+
+.btn-primary:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.btn-success {
+    background: #10b981;
+    color: white;
+    margin-top: 10px;
+}
+
+.btn-success:hover {
+    background: #059669;
+    transform: translateY(-2px);
+    box-shadow: 0 10px 20px rgba(16, 185, 129, 0.4);
+}
+
+.btn-secondary {
+    background: #6b7280;
+    color: white;
+}
+
+.btn-secondary:hover {
+    background: #4b5563;
+}
+
+.status {
+    padding: 20px;
+    border-radius: 8px;
+    margin-top: 20px;
+    text-align: center;
+    font-weight: 600;
+    animation: fadeIn 0.3s;
+}
+
+.status.success {
+    background: #d1fae5;
+    color: #065f46;
+    border: 2px solid #10b981;
+}
+
+.status.error {
+    background: #fee2e2;
+    color: #991b1b;
+    border: 2px solid #ef4444;
+}
+
+.status.warning {
+    background: #fef3c7;
+    color: #92400e;
+    border: 2px solid #f59e0b;
+}
+
+.status.info {
+    background: #dbeafe;
+    color: #1e40af;
+    border: 2px solid #3b82f6;
+}
+
+.turnstile-animation {
+    width: 100px;
+    height: 100px;
+    margin: 20px auto;
+    position: relative;
+}
+
+.turnstile-bar {
+    width: 80px;
+    height: 8px;
+    background: #333;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    border-radius: 4px;
+    transition: transform 0.5s;
+}
+
+.turnstile-bar.open {
+    transform: translate(-50%, -50%) rotate(90deg);
+}
+
+.turnstile-post {
+    width: 10px;
+    height: 100px;
+    background: #555;
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    border-radius: 5px;
+}
+
+.info-box {
+    background: #f3f4f6;
+    padding: 15px;
+    border-radius: 8px;
+    margin-top: 20px;
+    font-size: 13px;
+    color: #4b5563;
+    border: 2px solid #e5e7eb;
+}
+
+.info-box strong {
+    color: #1f2937;
+}
+
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.hidden {
+    display: none;
+}
+
+.loading {
+    display: inline-block;
+    width: 20px;
+    height: 20px;
+    border: 3px solid rgba(255, 255, 255, 0.3);
+    border-radius: 50%;
+    border-top-color: white;
+    animation: spin 1s ease-in-out infinite;
+}
+
+@keyframes spin {
+    to { transform: rotate(720deg); }
+}
+
+
+/* Responsive */
+@media (max-width: 640px) {
+    .container {
+        max-width: 100%;
+    }
+
+    .header h1 {
+        font-size: 24px;
+    }
+
+    .btn {
+        font-size: 14px;
+    }
+
+    .debug-console {
+        font-size: 11px;
+        max-height: 300px;
+    }
+}
