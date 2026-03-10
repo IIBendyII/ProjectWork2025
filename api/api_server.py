@@ -3,7 +3,7 @@ from flask_cors import cross_origin
 from db_handler import Gestionale, LogsAndStats
 from privacy_modules import anonimizzatore, pseudonimizzatore, load_encrypt_key
 from datetime import datetime, date, timezone
-import hmac
+import hmac, re
 from hashlib import sha256
 from sys import stdout
 import os, logging
@@ -114,7 +114,7 @@ def home():
             raise ValueError("SmartCard ID non ha un formato accettabile")
         idPalestra = int(data["IDPalestra"])
         timestamp = int(data["Timestamp"])
-        signature = data["Signature"]
+        signature = re.sub(r'\^[a-z0-9]\+\$/', '', data["Signature"])
     except ValueError as e:
         logger.error("Dati ricevuti incorretti: %s", str(e))
         return jsonify({"valido": False,
