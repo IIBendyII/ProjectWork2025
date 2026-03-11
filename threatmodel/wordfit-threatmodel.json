@@ -401,13 +401,11 @@
                 "text": "DB Log & Stats"
               },
               "topLine": {
-                "stroke": "red",
-                "strokeWidth": 2.5,
+                "strokeWidth": 1.5,
                 "strokeDasharray": null
               },
               "bottomLine": {
-                "stroke": "red",
-                "strokeWidth": 2.5,
+                "strokeWidth": 1.5,
                 "strokeDasharray": null
               }
             },
@@ -504,7 +502,7 @@
               "outOfScope": false,
               "isTrustBoundary": false,
               "reasonOutOfScope": "",
-              "hasOpenThreats": true,
+              "hasOpenThreats": false,
               "isALog": true,
               "isEncrypted": false,
               "isSigned": false,
@@ -613,19 +611,6 @@
                   "modelType": "STRIDE",
                   "new": false,
                   "number": 24,
-                  "score": ""
-                },
-                {
-                  "id": "6ddcf95a-7adc-44d9-866f-7f7579cb4d0b",
-                  "title": "New STRIDE threat",
-                  "status": "Open",
-                  "severity": "TBD",
-                  "type": "Repudiation",
-                  "description": "Provide a description for this threat",
-                  "mitigation": "Provide remediation for this threat or a reason if status is N/A",
-                  "modelType": "STRIDE",
-                  "new": true,
-                  "number": 27,
                   "score": ""
                 }
               ],
@@ -1207,133 +1192,6 @@
             "connector": "smooth",
             "data": {
               "type": "tm.Flow",
-              "name": "Insert",
-              "description": "Inserimento di log e statistiche",
-              "outOfScope": false,
-              "isTrustBoundary": false,
-              "reasonOutOfScope": "",
-              "hasOpenThreats": false,
-              "isBidirectional": false,
-              "isEncrypted": false,
-              "isPublicNetwork": false,
-              "protocol": "MySql Client/Server",
-              "threats": [],
-              "threatFrequency": {
-                "tampering": 0,
-                "informationDisclosure": 0,
-                "denialOfService": 0
-              }
-            },
-            "labels": [
-              "Insert"
-            ],
-            "id": "dde329b5-9ceb-469c-a127-cb61575dc595",
-            "source": {
-              "cell": "912ff33a-b258-4fd1-8dcf-6517a25858ad",
-              "port": "e7f00108-868d-4649-823d-d3b3e68e0da1"
-            },
-            "target": {
-              "cell": "0b9721df-5965-4ae9-9232-89be6739fcce",
-              "port": "a5c16afa-7009-40af-9ea7-6fb8d343ff05"
-            },
-            "vertices": [
-              {
-                "x": 1120,
-                "y": 255
-              }
-            ]
-          },
-          {
-            "shape": "flow",
-            "attrs": {
-              "line": {
-                "stroke": "red",
-                "strokeWidth": 2.5,
-                "targetMarker": {
-                  "name": "block"
-                },
-                "sourceMarker": {
-                  "name": ""
-                },
-                "strokeDasharray": null
-              }
-            },
-            "width": 200,
-            "height": 100,
-            "zIndex": 10,
-            "connector": "smooth",
-            "data": {
-              "type": "tm.Flow",
-              "name": "API Threats",
-              "description": "",
-              "outOfScope": false,
-              "isTrustBoundary": false,
-              "reasonOutOfScope": "",
-              "hasOpenThreats": true,
-              "isBidirectional": false,
-              "isEncrypted": false,
-              "isPublicNetwork": false,
-              "protocol": "",
-              "threats": [
-                {
-                  "id": "b2c49ca8-3062-4776-92c1-72b3bf84cb99",
-                  "title": "DoS",
-                  "status": "Open",
-                  "severity": "High",
-                  "type": "Denial of service",
-                  "description": "Denial of Service",
-                  "mitigation": "Limitare richieste dello stesso indirizzo IP ad 1 al secondo (tramite firewall).",
-                  "modelType": "STRIDE",
-                  "new": false,
-                  "number": 2,
-                  "score": ""
-                }
-              ],
-              "threatFrequency": {
-                "tampering": 0,
-                "informationDisclosure": 0,
-                "denialOfService": 1
-              }
-            },
-            "labels": [
-              "API Threats"
-            ],
-            "id": "000b9011-f0b1-485f-be44-bfab111a73db",
-            "source": {
-              "cell": "1a194942-0d07-431e-a6e6-d976a610e437",
-              "port": "d729dc76-162f-4723-b715-a7177ea2672a"
-            },
-            "target": {
-              "cell": "912ff33a-b258-4fd1-8dcf-6517a25858ad",
-              "port": "ea84b33d-16fd-4aa5-871a-8570ac1a8c13"
-            },
-            "vertices": [
-              {
-                "x": 760,
-                "y": 450
-              }
-            ]
-          },
-          {
-            "shape": "flow",
-            "attrs": {
-              "line": {
-                "stroke": "#333333",
-                "targetMarker": {
-                  "name": "block"
-                },
-                "sourceMarker": {
-                  "name": ""
-                },
-                "strokeDasharray": null
-              }
-            },
-            "width": 200,
-            "height": 100,
-            "zIndex": 10,
-            "connector": "smooth",
-            "data": {
-              "type": "tm.Flow",
               "name": "Risposta",
               "description": "Risposta di avvenuto controllo dell'abbonamento",
               "outOfScope": false,
@@ -1464,6 +1322,133 @@
               {
                 "x": 700,
                 "y": 160
+              }
+            ]
+          },
+          {
+            "shape": "flow",
+            "attrs": {
+              "line": {
+                "stroke": "red",
+                "strokeWidth": 2.5,
+                "targetMarker": {
+                  "name": "block"
+                },
+                "sourceMarker": {
+                  "name": ""
+                },
+                "strokeDasharray": null
+              }
+            },
+            "width": 200,
+            "height": 100,
+            "zIndex": 10,
+            "connector": "smooth",
+            "data": {
+              "type": "tm.Flow",
+              "name": "API Threats",
+              "description": "",
+              "outOfScope": false,
+              "isTrustBoundary": false,
+              "reasonOutOfScope": "",
+              "hasOpenThreats": true,
+              "isBidirectional": false,
+              "isEncrypted": false,
+              "isPublicNetwork": false,
+              "protocol": "",
+              "threats": [
+                {
+                  "id": "b2c49ca8-3062-4776-92c1-72b3bf84cb99",
+                  "title": "DoS",
+                  "status": "Open",
+                  "severity": "High",
+                  "type": "Denial of service",
+                  "description": "Denial of Service",
+                  "mitigation": "Limitare richieste dello stesso indirizzo IP ad 1 al secondo (tramite firewall).",
+                  "modelType": "STRIDE",
+                  "new": false,
+                  "number": 2,
+                  "score": ""
+                }
+              ],
+              "threatFrequency": {
+                "tampering": 0,
+                "informationDisclosure": 0,
+                "denialOfService": 1
+              }
+            },
+            "labels": [
+              "API Threats"
+            ],
+            "id": "000b9011-f0b1-485f-be44-bfab111a73db",
+            "source": {
+              "cell": "1a194942-0d07-431e-a6e6-d976a610e437",
+              "port": "d729dc76-162f-4723-b715-a7177ea2672a"
+            },
+            "target": {
+              "cell": "912ff33a-b258-4fd1-8dcf-6517a25858ad",
+              "port": "ea84b33d-16fd-4aa5-871a-8570ac1a8c13"
+            },
+            "vertices": [
+              {
+                "x": 760,
+                "y": 450
+              }
+            ]
+          },
+          {
+            "shape": "flow",
+            "attrs": {
+              "line": {
+                "stroke": "#333333",
+                "targetMarker": {
+                  "name": "block"
+                },
+                "sourceMarker": {
+                  "name": ""
+                },
+                "strokeDasharray": null
+              }
+            },
+            "width": 200,
+            "height": 100,
+            "zIndex": 10,
+            "connector": "smooth",
+            "data": {
+              "type": "tm.Flow",
+              "name": "Insert",
+              "description": "Inserimento di log e statistiche",
+              "outOfScope": false,
+              "isTrustBoundary": false,
+              "reasonOutOfScope": "",
+              "hasOpenThreats": false,
+              "isBidirectional": false,
+              "isEncrypted": false,
+              "isPublicNetwork": false,
+              "protocol": "MySql Client/Server",
+              "threats": [],
+              "threatFrequency": {
+                "tampering": 0,
+                "informationDisclosure": 0,
+                "denialOfService": 0
+              }
+            },
+            "labels": [
+              "Insert"
+            ],
+            "id": "dde329b5-9ceb-469c-a127-cb61575dc595",
+            "source": {
+              "cell": "912ff33a-b258-4fd1-8dcf-6517a25858ad",
+              "port": "e7f00108-868d-4649-823d-d3b3e68e0da1"
+            },
+            "target": {
+              "cell": "0b9721df-5965-4ae9-9232-89be6739fcce",
+              "port": "a5c16afa-7009-40af-9ea7-6fb8d343ff05"
+            },
+            "vertices": [
+              {
+                "x": 1120,
+                "y": 255
               }
             ]
           }
