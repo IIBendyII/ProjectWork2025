@@ -55,23 +55,10 @@ Le smartcard vengono **pseudonimizzate** prima del salvataggio nella tabella di 
 
 Il repository è organizzato per isolare i diversi container Docker e gli script di utilità:
 * 📁 **`api/`**: Contiene il codice sorgente e il `Dockerfile` necessari per la build del container `worldfit_api` (il core backend del sistema).
+* 📁 **`client/`**: Contiene il codice HTML, CSS e Javascript del Client
 * 📁 **`db/`**: Contiene gli script di inizializzazione e configurazione per la build del container `db_logs_stats` (Database MySQL).
 * 📁 **`external/`**: Moduli esterni e tool di testing, tra cui:
   * Un modulo Python con funzioni per la re-identificazione degli pseudonimi e la generazione di chiavi asimmetriche.
   * Uno script *Proof of Concept* (PoC) che funge da tornello fittizio per testare localmente le risposte del backend.
+* 📁 **`threatmodel/`**: Threat model dell'applicazione sviluppato utilizzando OWASP Threat Dragon
 * 📄 **`docker-compose.yml`**: File di orchestrazione per avviare l'intera infrastruttura (API + Database) con un solo comando.
-
----
-
-## 🚀 Installazione ed Avvio in Locale
-
-Il progetto è containerizzato tramite **Docker**, rendendo il deployment locale rapido e isolato.
-
-### Prerequisiti
-- [Docker](https://www.docker.com/) e [Docker Compose](https://docs.docker.com/compose/) installati sul tuo sistema.
-
-### Setup
-1. Clona il repository:
-   ```bash
-   git clone https://github.com/IIBendyII/ProjectWork2025.git
-   cd ProjectWork2025
