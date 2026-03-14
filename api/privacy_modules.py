@@ -52,7 +52,7 @@ def pseudonimizzatore(smart_card_id: str, encrypt_key:RSA.RsaKey, pseudo_pad:str
     """
         Funzione che dato un ID, chiave e padding, pseudonimizza l'ID con cifratura asimmetrica RSA.
         La tipologia di RSA utilizzata è di tipo Raw RSA con padding preimpostato, per rendere gli
-        presudonimi generati deterministici in modo da garantire controlli anti-frode senza impegare
+        presudonimi generati deterministici in modo da garantire controlli anti-frode senza impiegare
         chiavi di decifratura o tabelle di corrispondenza on-line.
         
         Questo tipo di implementazione si è rivelato necessario in quanto per motivi di sicurezza,
